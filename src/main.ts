@@ -1,5 +1,7 @@
-const { App } = require('@slack/bolt');
 require('dotenv').config();
+
+const { App } = require('@slack/bolt');
+import connect from './db/connect'
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -64,6 +66,7 @@ app.event('reaction_added', ({ event, say }) => {
 
 
 (async () => {
+  const db = await connect()
   await app.start(process.env.PORT || 3000);
   console.log('Pair bear is alive!');
 })();
