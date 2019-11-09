@@ -11,4 +11,8 @@ mongo <dbdomain>/<dbname> -u <dbuser> -p <dbpassword>
 
 ## References
 
+#### Project Outline
+https://zeals.docbase.io/posts/957871
+
+#### About Slack's Bolt Framework
 https://slack.dev/bolt/tutorial/getting-started
