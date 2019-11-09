@@ -2,8 +2,22 @@
   "name": "pair-bear",
   "version": "0.0.1",
   "description": "Pair Programming Chatbot",
-  "main": "index.js",
+  "main": "dist/main.js",
   "repository": "https://github.com/aburd/pair-bear.git",
   "author": "Aaron Burdick",
-  "license": "MIT"
+  "scripts": {
+    "start": "tsc && node ./dist/main.js",
+    "compile": "tsc"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@slack/bolt": "^1.4.1",
+    "dotenv": "^8.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.7",
+    "ts-node": "^8.4.1",
+    "tslint": "^5.20.1",
+    "typescript": "^3.7.2"
+  }
 }
