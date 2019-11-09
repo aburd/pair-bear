@@ -1,0 +1,3 @@
+// Receiving Invite
+// https://zeals.docbase.io/posts/957871#b-receiving-invite
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicmVjZWl2aW5nSW52aXRlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vc3JjL3Byb2Nlc3Nlcy9yZWNlaXZpbmdJbnZpdGUudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsbUJBQW1CO0FBQ25CLDJEQUEyRCJ9
