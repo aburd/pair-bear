@@ -2,11 +2,14 @@ require('dotenv').config();
 
 const { App } = require('@slack/bolt');
 import connect from './db/connect'
+import sendingInvite from './processes/sendingInvite'
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
 });
+
+app.message()
 
 app.message('hello', ({ message, say }) => {
   say({
@@ -15,7 +18,7 @@ app.message('hello', ({ message, say }) => {
         "type": "section",
         "text": {
           "type": "mrkdwn",
-          "text": `Hey there <@${message.user}>!`
+          "text": `Hey there <@${message.user}>`
         },
         "accessory": {
           "type": "button",
@@ -63,10 +66,18 @@ app.event('reaction_added', ({ event, say }) => {
   }
 });
 
+app.command('/echo', async ({ command, ack, say }) => {
+  // Acknowledge command request
+  ack();
+
+  say(`${command.text}`);
+});
 
 
 (async () => {
   const db = await connect()
   await app.start(process.env.PORT || 3000);
   console.log('Pair bear is alive!');
+
+  await sendingInvite(app, db)
 })();
