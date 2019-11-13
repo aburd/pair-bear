@@ -5,8 +5,7 @@ import Mongoose from 'mongoose';
 
 const token = process.env.SLACK_ACCESS_TOKEN
 
-export default async function (app: Bolt.App, db: Mongoose.Connection): Promise<void> {
-  const channel = 'DQC9E2QH3'
+export default async function (app: Bolt.App, channel: string, db?: Mongoose.Connection): Promise<void> {
   function sendMsg(text) {
     return app.client.chat.postMessage({
       token,
