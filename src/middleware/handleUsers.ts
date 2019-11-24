@@ -12,11 +12,12 @@ export default function createHandleUsersMiddleware(app, db: mongoose.Connection
     const { channel, text } = payload
     try {
       const user = await getUser(channel)
-      if (!user) throw new Error('User not registered!')
-      if (user.convoExpired) {
-        say("It's been a while! I missed you (roar).")
-      }
-      setUser(user, text)
+      // console.log('user', user)
+      // if (!user) throw new Error('User not registered!')
+      // if (user.convoExpired) {
+      //   say("It's been a while! I missed you (roar).")
+      // }
+      // await setUser(user, text)
       next()
     } catch (e) {
       console.error(e.message)
@@ -33,8 +34,8 @@ export default function createHandleUsersMiddleware(app, db: mongoose.Connection
       team: payload.team,
       lastMessage: { text: payload.text }
     })
-    say(`Oh hey, <@${user.userId}>! Nice to meet you!`)
-    help({ channel: user.channel, app })
+    await say(`Oh hey, <@${user.userId}>! Nice to meet you! I went ahead and registered you in the database.`)
+    say("type `help` for more information")
   }
 }
 
@@ -48,8 +49,10 @@ async function getUser(channel) {
 }
 
 async function setUser(user, text) {
-  return user.updateOne({
-    lastMessage: text,
-    expiresAt: new Date(Date.now() + (30 * 60 * 1000))
-  })
+  user.lastMessage = {
+    text,
+    date: Date.now,
+  }
+  user.expiresAt = new Date(Date.now() + (30 * 60 * 1000))
+  await user.save()
 }

@@ -19,7 +19,10 @@ interface IUserSchema extends Document {
   team: string,
   channel: string,
   expiresAt: Date,
-  lastMessage: string,
+  lastMessage: {
+    text: string,
+    date: Date,
+  },
 }
 
 // virtuals
