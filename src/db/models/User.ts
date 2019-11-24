@@ -1,4 +1,4 @@
-import { Schema, model, Document } from 'mongoose'
+import { Schema, model, Document, Model } from 'mongoose'
 
 const userSchema = new Schema(
   {
@@ -14,26 +14,34 @@ const userSchema = new Schema(
   { timestamps: true },
 );
 
-userSchema.static('findByUser', function (user) {
-  return this.find({ user })
-})
-
-userSchema.methods.currentlyTalking = function (): boolean {
-  return new Date() < this.expiresAt
-}
-
-export interface UserDoc extends Document {
+interface IUserSchema extends Document {
   userId: string,
   team: string,
   channel: string,
   expiresAt: Date,
-  lastMessage: {
-    text: string,
-    date: Date,
-  },
-  // methods
-  currentlyTalking: () => boolean,
+  lastMessage: string,
 }
 
-const User = model<UserDoc>('User', userSchema)
-export default User;
+// virtuals
+userSchema.virtual("convoExpired").get(function (): boolean {
+  return new Date() > this.expiresAt
+})
+
+export interface IUser extends IUserSchema {
+  convoExpired: boolean
+}
+
+userSchema.static('findOneById', function (userId) {
+  return this.findOne({ userId })
+})
+
+userSchema.static('findOneByChannel', function (channel) {
+  return this.findOne({ channel })
+})
+
+export interface IUserModel extends Model<IUser> {
+  findOneById(userId: string): Promise<IUser>
+  findOneByChannel(channel: string): Promise<IUser>
+}
+
+export default model<IUser, IUserModel>('User', userSchema);
