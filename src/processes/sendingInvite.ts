@@ -1,24 +1,19 @@
 // Sending Invite
 // https://zeals.docbase.io/posts/957871#a-sending-invite
-import Bolt from '@slack/bolt';
-import Mongoose from 'mongoose';
 import { User } from '../db/models'
+import { Actions } from '../typings'
 
 const token = process.env.SLACK_ACCESS_TOKEN
 
-export default async function sendingInvite(app: Bolt.App, context: any, db?: Mongoose.Connection): Promise<void> {
-  function sendMsg(text) {
-    return app.client.chat.postMessage({
-      token,
-      channel: context.user.channel,
-      text,
-    })
-  }
-
+export default async function sendingInvite({
+  context,
+  say,
+}): Promise<void> {
   async function createInvite() {
-    await sendMsg(`Hey, let's set up pair programming for this weak! (rawr)`)
-    await sendMsg(`Here are the engineers that are available:`)
-    await sendMsg(await displayUsers())
+    await say(`Hey, let's set up pair programming for this week, ${context.user.slackName()}! (rawr)`)
+    await say(`Please choose the engineer you would like to pair program with.`)
+    await say(`Here are the engineers that are available:`)
+    await displayUsers(say)
   }
 
   await createInvite()
@@ -37,9 +32,29 @@ export default async function sendingInvite(app: Bolt.App, context: any, db?: Mo
   // }
 }
 
-async function displayUsers(): Promise<string> {
+async function displayUsers(say): Promise<void> {
   const users = await User.find()
-  return users.map(user => user.slackName()).join('\n')
+  say({
+    blocks: users.map(user => {
+      return {
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": user.slackName()
+        },
+        "accessory": {
+          "type": "button",
+          "text": {
+            "type": "plain_text",
+            "text": "Create invite",
+            style: "primary"
+          },
+          value: user.userId,
+          "action_id": Actions.inviteEngineerSelected,
+        }
+      }
+    })
+  })
 }
 
 //   // Sends a section block with datepicker when someone reacts with a 📅 emoji

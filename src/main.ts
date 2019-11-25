@@ -26,9 +26,8 @@ app.message(/help/i, async (args) => {
 })
 
 app.message(/^invites?/i, async (args) => {
-  const { context } = args;
   await handleUsers(args)
-  await sendingInvite(app, context)
+  await sendingInvite(args)
 })
 
 app.message(/^(hello|hi|こんにちは|こんばんは|hey)$/i, async (args) => {
