@@ -1,3 +1,0 @@
-// Appointment Reminder
-// https://zeals.docbase.io/posts/957871#d-appointment-reminder
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYXBwb2ludG1lbnRSZW1pbmRlci5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uL3NyYy9wcm9jZXNzZXMvYXBwb2ludG1lbnRSZW1pbmRlci50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSx1QkFBdUI7QUFDdkIsK0RBQStEIn0=

@@ -34,8 +34,7 @@ export default function createHandleUsersMiddleware(app, db: mongoose.Connection
       team: payload.team,
       lastMessage: { text: payload.text }
     })
-    await say(`Oh hey, <@${user.userId}>! Nice to meet you! I went ahead and registered you in the database.`)
-    say("type `help` for more information")
+    await say(`Oh hey, <@${user.userId}>! Nice to meet you! I went ahead and registered you in the database. Type \`help\` for more information`)
   }
 }
 

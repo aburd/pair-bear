@@ -1,5 +1,4 @@
 import Bolt from '@slack/bolt';
-import Mongoose from 'mongoose';
 import { randomFact } from '../lib/bearFacts'
 
 const token = process.env.SLACK_ACCESS_TOKEN
@@ -24,8 +23,8 @@ export default async function help({ say, app, channel }: {
   }
 
   await sendMsg(`Did you know? ${randomFact()}
-    Oh sorry, you needed help?
-    Maybe you can try this:
+    You're trying to get help from a bear?
+    Maybe you can try these commands:
     Say:
     \`help\` to see these options again
     \`hello\` for a great bear greeting!
