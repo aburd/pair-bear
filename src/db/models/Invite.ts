@@ -2,13 +2,19 @@ import { Schema, model, Document, Model } from 'mongoose'
 import User from './User'
 import { hyphenate } from '../../util'
 
+export enum Confirmation {
+  unconfirmed = 'unconfirmed',
+  confirmed = 'confirmed',
+  denied = 'denied',
+}
+
 const inviteSchema = new Schema(
   {
     theme: { type: String, required: true },
     date: { type: Date, required: true },
     from: { type: String, required: true },
     to: { type: String, required: true },
-    confirmed: { type: Boolean, default: false }
+    confirmation: { type: String, default: Confirmation.unconfirmed }
   },
   { timestamps: true },
 );
@@ -18,11 +24,14 @@ interface IInviteSchema extends Document {
   date: Date
   from: string
   to: string
-  confirmed: boolean
+  confirmation: Confirmation
 }
 
 inviteSchema.methods.toBlocks = async function () {
-  const from = await User.findOneById(this.from)
+  const [from, to] = await Promise.all([
+    User.findOneById(this.from),
+    User.findOneById(this.to),
+  ])
   return [
     {
       "type": "section",
@@ -33,10 +42,21 @@ inviteSchema.methods.toBlocks = async function () {
     },
     {
       "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": `Invite to ${to.slackName()}`
+      }
+    },
+    {
+      "type": "section",
       "fields": [
         {
           "type": "mrkdwn",
           "text": `*Theme:*\n${this.theme}`
+        },
+        {
+          "type": "mrkdwn",
+          "text": `*Confirmed:*\n${this.confirmation}`
         },
         {
           "type": "mrkdwn",

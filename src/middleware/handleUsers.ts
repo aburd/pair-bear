@@ -1,9 +1,10 @@
 import { User } from '../db/models'
 
-export async function handleUsers({ payload, context, say, next }) {
+export async function handleUsers({ payload, body, context, say, next }) {
   if (process.env.NODE_ENV = 'dev') {
-    console.log('payload', payload);
-    console.log('context', context);
+    console.log('payload', payload)
+    console.log('context', context)
+    console.log('body', body)
     console.log('\n\n')
   }
   const { channel, text } = payload

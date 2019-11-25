@@ -3,27 +3,65 @@
 import { User, IUser } from '../db/models'
 import { Actions } from '../typings'
 
-export default async function sendingInvite(args): Promise<void> {
+export async function showInviteOptions(args): Promise<void> {
   await listOptions(args)
-
-
-  // await sendMsg(`You've chosen <engineer>, is that correct?`)
-  // await sendMsg(`Bear-y good! (heh)`)
-  // await sendMsg(`Can you also choose some date and times for your pair-programming session?\n(the other engineer may ask to change this later)`)
-  // await sendMsg(`Ok, so just bear with me (heh), I'm going to confirm your details.`)
-  // showInviteDetails()
-  // const confirmed = true
-  // if (confirmed) {
-  //   await sendMsg(`Thanks! I'm so excited, I can't bear it!`)
-  // } else {
-  //   await sendMsg(`Hmm, let's try that again.`)
-  //   await createInvite()
-  // }
 }
 
-async function listOptions({ say, context }) {
+async function listOptions({ say }) {
+  await say({
+    blocks: [
+      {
+        "type": "divider"
+      },
+      {
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": "Show Received Invites"
+        },
+        "accessory": {
+          "type": "button",
+          "text": {
+            "type": "plain_text",
+            "text": "Show",
+          },
+          "action_id": Actions.inviteShowReceived,
+        }
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": "Show Sent Invites"
+        },
+        "accessory": {
+          "type": "button",
+          "text": {
+            "type": "plain_text",
+            "text": "Show",
+          },
+          "action_id": Actions.inviteShowSent,
+        }
+      },
+      {
+        "type": "divider"
+      }
+    ]
+  })
+}
+
+export async function showReceived({ say, context }) {
   const { user }: { user: IUser } = context
   const invites = await user.invitesReceived()
+  invites.forEach(async (invite) => say({ blocks: await invite.toBlocks() }))
+}
+
+export async function showSent({ say, context }) {
+  const { user }: { user: IUser } = context
+  const invites = await user.invitesSent()
   invites.forEach(async (invite) => say({ blocks: await invite.toBlocks() }))
 }
 
@@ -32,6 +70,22 @@ async function createInvite({ say, context }) {
   await say(`Please choose the engineer you would like to pair program with.`)
   await say(`Here are the engineers that are available:`)
   await displayUsers(say)
+}
+
+async function temp(args) {
+  const { say } = args;
+  await say(`You've chosen <engineer>, is that correct?`)
+  await say(`Bear-y good! (heh)`)
+  await say(`Can you also choose some date and times for your pair-programming session?\n(the other engineer may ask to change this later)`)
+  await say(`Ok, so just bear with me (heh), I'm going to confirm your details.`)
+  // showInviteDetails()
+  const confirmed = true
+  if (confirmed) {
+    await say(`Thanks! I'm so excited, I can't bear it!`)
+  } else {
+    await say(`Hmm, let's try that again.`)
+    await createInvite(args)
+  }
 }
 
 async function displayUsers(say): Promise<void> {

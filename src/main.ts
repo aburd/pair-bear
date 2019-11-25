@@ -6,10 +6,15 @@ import { handleUsers } from './middleware/handleUsers'
 import {
   help,
   greet,
-  sendingInvite,
 } from './processes'
-import { Actions } from './typings'
+import {
+  showInviteOptions,
+  showReceived,
+  showSent,
+} from './processes/invites'
 import { User } from './db/models'
+import { Actions } from './typings'
+
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -30,14 +35,27 @@ app.message(/help/i, async (args) => {
 // invites
 app.message(/^invites?/i, async (args) => {
   await handleUsers(args)
-  await sendingInvite(args)
+  await showInviteOptions(args)
+})
+
+app.action(Actions.inviteShowReceived, async (args) => {
+  args.ack()
+  const { context, body } = args;
+  context.user = await User.findOneById(body.user.id)
+  await showReceived(args)
+})
+
+app.action(Actions.inviteShowSent, async (args) => {
+  args.ack()
+  const { context, body } = args;
+  context.user = await User.findOneById(body.user.id)
+  await handleUsers(args)
+  await showSent(args)
 })
 
 app.event(Actions.inviteEngineerSelected, async (args) => {
-  await handleUsers(args)
   const { event, context, ack } = args;
   ack()
-
 })
 
 // hello

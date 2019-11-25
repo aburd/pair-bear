@@ -1,5 +1,5 @@
 import { Schema, model, Document, Model } from 'mongoose'
-import Invite, { IInvite } from './Invite'
+import Invite, { Confirmation, IInvite } from './Invite'
 import { hyphenate } from '../../util'
 
 const userSchema = new Schema(
