@@ -56,12 +56,14 @@ async function listOptions({ say }) {
 export async function showReceived({ say, context }) {
   const { user }: { user: IUser } = context
   const invites = await user.invitesReceived()
+  say('Invites Received:')
   invites.forEach(async (invite) => say({ blocks: await invite.toBlocks() }))
 }
 
 export async function showSent({ say, context }) {
   const { user }: { user: IUser } = context
   const invites = await user.invitesSent()
+  say('Invites Sent:')
   invites.forEach(async (invite) => say({ blocks: await invite.toBlocks() }))
 }
 

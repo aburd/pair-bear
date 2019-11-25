@@ -1,6 +1,7 @@
 import { Schema, model, Document, Model } from 'mongoose'
 import User from './User'
 import { hyphenate } from '../../util'
+import { Actions } from '../../typings'
 
 export enum Confirmation {
   unconfirmed = 'unconfirmed',
@@ -33,6 +34,9 @@ inviteSchema.methods.toBlocks = async function () {
     User.findOneById(this.to),
   ])
   return [
+    {
+      "type": "divider"
+    },
     {
       "type": "section",
       "text": {
@@ -79,7 +83,8 @@ inviteSchema.methods.toBlocks = async function () {
             "text": "Approve"
           },
           "style": "primary",
-          "value": "click_me_123"
+          "value": this.id,
+          action_id: Actions.inviteConfirm,
         },
         {
           "type": "button",
@@ -89,10 +94,14 @@ inviteSchema.methods.toBlocks = async function () {
             "text": "Deny"
           },
           "style": "danger",
-          "value": "click_me_123"
+          "value": this.id,
+          action_id: Actions.inviteDeny,
         }
       ]
-    }
+    },
+    {
+      "type": "divider"
+    },
   ]
 }
 

@@ -12,7 +12,8 @@ import {
   showReceived,
   showSent,
 } from './processes/invites'
-import { User } from './db/models'
+import { User, Invite } from './db/models'
+import { Confirmation } from './db/models/Invite'
 import { Actions } from './typings'
 
 
@@ -49,8 +50,25 @@ app.action(Actions.inviteShowSent, async (args) => {
   args.ack()
   const { context, body } = args;
   context.user = await User.findOneById(body.user.id)
-  await handleUsers(args)
   await showSent(args)
+})
+
+app.action(Actions.inviteConfirm, async ({ ack, payload, say }) => {
+  const invite = await Invite.findById(payload.value)
+  invite.confirmation = Confirmation.confirmed
+  await invite.save()
+  ack()
+  say("Invite has been confirmed!")
+  say({ blocks: await invite.toBlocks() })
+})
+
+app.action(Actions.inviteDeny, async ({ ack, payload, say }) => {
+  const invite = await Invite.findById(payload.value)
+  invite.confirmation = Confirmation.denied
+  await invite.save()
+  ack()
+  say("Invite has been denied")
+  say({ blocks: await invite.toBlocks() })
 })
 
 app.event(Actions.inviteEngineerSelected, async (args) => {
