@@ -1,20 +1,11 @@
 // Sending Invite
 // https://zeals.docbase.io/posts/957871#a-sending-invite
-import { User } from '../db/models'
+import { User, IUser } from '../db/models'
 import { Actions } from '../typings'
 
-export default async function sendingInvite({
-  context,
-  say,
-}): Promise<void> {
-  async function createInvite() {
-    await say(`Hey, let's set up pair programming for this week, ${context.user.slackName()}! (rawr)`)
-    await say(`Please choose the engineer you would like to pair program with.`)
-    await say(`Here are the engineers that are available:`)
-    await displayUsers(say)
-  }
+export default async function sendingInvite(args): Promise<void> {
+  await listOptions(args)
 
-  await createInvite()
 
   // await sendMsg(`You've chosen <engineer>, is that correct?`)
   // await sendMsg(`Bear-y good! (heh)`)
@@ -30,28 +21,39 @@ export default async function sendingInvite({
   // }
 }
 
+async function listOptions({ say, context }) {
+  const { user }: { user: IUser } = context
+  const invites = await user.invitesReceived()
+  invites.forEach(async (invite) => say({ blocks: await invite.toBlocks() }))
+}
+
+async function createInvite({ say, context }) {
+  await say(`Hey, let's set up pair programming for this week, ${context.user.slackName()}! (rawr)`)
+  await say(`Please choose the engineer you would like to pair program with.`)
+  await say(`Here are the engineers that are available:`)
+  await displayUsers(say)
+}
+
 async function displayUsers(say): Promise<void> {
   const users = await User.find()
   say({
-    blocks: users.map(user => {
-      return {
-        "type": "section",
+    blocks: users.map(user => ({
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": user.slackName()
+      },
+      "accessory": {
+        "type": "button",
         "text": {
-          "type": "mrkdwn",
-          "text": user.slackName()
+          "type": "plain_text",
+          "text": "Create invite",
+          style: "primary"
         },
-        "accessory": {
-          "type": "button",
-          "text": {
-            "type": "plain_text",
-            "text": "Create invite",
-            style: "primary"
-          },
-          value: user.userId,
-          "action_id": Actions.inviteEngineerSelected,
-        }
+        value: user.userId,
+        "action_id": Actions.inviteEngineerSelected,
       }
-    })
+    }))
   })
 }
 
