@@ -3,8 +3,6 @@
 import { User } from '../db/models'
 import { Actions } from '../typings'
 
-const token = process.env.SLACK_ACCESS_TOKEN
-
 export default async function sendingInvite({
   context,
   say,

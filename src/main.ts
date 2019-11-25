@@ -8,6 +8,7 @@ import {
   greet,
   sendingInvite,
 } from './processes'
+import { Actions } from './typings'
 import { User } from './db/models'
 
 const app = new App({
@@ -20,16 +21,26 @@ const app = new App({
 // as listener functions will not wait for `next` function in global middleware
 // app.use(handleUsers)
 
+// help
 app.message(/help/i, async (args) => {
   await handleUsers(args)
   await help(args)
 })
 
+// invites
 app.message(/^invites?/i, async (args) => {
   await handleUsers(args)
   await sendingInvite(args)
 })
 
+app.event(Actions.inviteEngineerSelected, async (args) => {
+  await handleUsers(args)
+  const { event, context, ack } = args;
+  ack()
+
+})
+
+// hello
 app.message(/^(hello|hi|こんにちは|こんばんは|hey)$/i, async (args) => {
   await greet(args)
 });

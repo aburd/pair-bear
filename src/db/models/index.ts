@@ -1,3 +1,7 @@
+import Invite from './Invite'
 import User from './User'
 
-export { User }
+export {
+  Invite,
+  User,
+}
