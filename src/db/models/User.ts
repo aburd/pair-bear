@@ -30,8 +30,14 @@ userSchema.virtual("convoExpired").get(function (): boolean {
   return new Date() > this.expiresAt
 })
 
+// instance methods
+userSchema.methods.slackName = function (): string {
+  return `<@${this.userId}>`
+}
+
 export interface IUser extends IUserSchema {
   convoExpired: boolean
+  slackName(): string
 }
 
 userSchema.static('findOneById', function (userId) {
