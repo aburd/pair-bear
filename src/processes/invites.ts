@@ -7,64 +7,86 @@ export async function showInviteOptions(args): Promise<void> {
   await listOptions(args)
 }
 
-async function listOptions({ say }) {
-  await say({
-    blocks: [
-      {
-        "type": "divider"
+async function listOptions({ say, context }) {
+  const sentInvites = await context.user.invitesSent()
+  const blocks = [
+    {
+      "type": "divider"
+    },
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "Show Received Invites"
       },
-      {
-        "type": "section",
+      "accessory": {
+        "type": "button",
         "text": {
-          "type": "mrkdwn",
-          "text": "Show Received Invites"
+          "type": "plain_text",
+          "text": "Show",
         },
-        "accessory": {
-          "type": "button",
-          "text": {
-            "type": "plain_text",
-            "text": "Show",
-          },
-          "action_id": Actions.inviteShowReceived,
-        }
-      },
-      {
-        "type": "divider"
-      },
-      {
-        "type": "section",
-        "text": {
-          "type": "mrkdwn",
-          "text": "Show Sent Invites"
-        },
-        "accessory": {
-          "type": "button",
-          "text": {
-            "type": "plain_text",
-            "text": "Show",
-          },
-          "action_id": Actions.inviteShowSent,
-        }
-      },
-      {
-        "type": "divider"
+        "action_id": Actions.inviteShowReceived,
       }
-    ]
-  })
+    },
+  ]
+  if (sentInvites && sentInvites.length) {
+    blocks.push({
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "Show Sent Invite"
+      },
+      "accessory": {
+        "type": "button",
+        "text": {
+          "type": "plain_text",
+          "text": "Show",
+        },
+        "action_id": Actions.inviteShowSent,
+      }
+    })
+    blocks.push({ "type": "divider" })
+  } else {
+    blocks.push({
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": "Create Invite"
+      },
+      "accessory": {
+        "type": "button",
+        "text": {
+          "type": "plain_text",
+          "text": "Show",
+        },
+        "action_id": Actions.inviteCreateInvite,
+      }
+    })
+    blocks.push({ "type": "divider" })
+  }
+  await say({ blocks })
 }
 
 export async function showReceived({ say, context }) {
   const { user }: { user: IUser } = context
   const invites = await user.invitesReceived()
-  say('Invites Received:')
-  invites.forEach(async (invite) => say({ blocks: await invite.toBlocks() }))
+  if (invites && invites.length) {
+    say('Invites Received:')
+    invites.forEach(async (invite) => say({ blocks: await invite.toBlocks() }))
+  } else {
+    say("You have no invites at the moment!")
+  }
 }
 
 export async function showSent({ say, context }) {
   const { user }: { user: IUser } = context
   const invites = await user.invitesSent()
-  say('Invites Sent:')
-  invites.forEach(async (invite) => say({ blocks: await invite.toBlocks() }))
+  if (invites && invites.length) {
+    say('Invites Sent:')
+    invites.forEach(async (invite) => say({ blocks: await invite.toBlocks() }))
+  } else {
+    say("You don't have any invites, or the invites you have sent are too old. Say `invites` if you want to create a new one!")
+  }
 }
 
 async function createInvite({ say, context }) {
