@@ -71,10 +71,40 @@ app.action(Actions.inviteDeny, async ({ ack, payload, say }) => {
   say({ blocks: await invite.toBlocks() })
 })
 
-app.event(Actions.inviteEngineerSelected, async (args) => {
-  const { event, context, ack } = args;
-  ack()
-})
+app.action(Actions.inviteCreateInvite, ({ ack, payload, context }) => {
+  // Acknowledge the command request
+  ack();
+  console.log('payload.trigger_id', payload)
+  console.log('context', context)
+  try {
+    const result = app.client.views.open({
+      token: context.botToken,
+      // Pass a valid trigger_id within 3 seconds of receiving it
+      trigger_id: 'invite_create_modal',
+      // View payload
+      view: {
+        type: 'modal',
+        // View identifier
+        callback_id: 'view_1',
+        title: {
+          type: 'plain_text',
+          text: 'Modal title'
+        },
+        blocks: [],
+        submit: {
+          type: 'plain_text',
+          text: 'Submit'
+        }
+      }
+    });
+    console.log(result);
+  }
+  catch (error) {
+    console.error(error);
+  }
+});
+
+
 
 // hello
 app.message(/^(hello|hi|こんにちは|こんばんは|hey)$/i, async (args) => {
