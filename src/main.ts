@@ -17,7 +17,7 @@ import { createInviteModal } from './handlers/inviteModal'
 import { User, Invite } from './db/models'
 import { Confirmation } from './db/models/Invite'
 import { Actions, Views } from './typings'
-import { serializeCreateInviteView } from './util'
+import serializeCreateInviteView from './lib/serializeCreateInviteView'
 
 
 const app = new App({

@@ -1,6 +1,6 @@
 import { Schema, model, Document, Model } from 'mongoose'
 import Invite, { Confirmation, IInvite } from './Invite'
-import { hyphenate } from '../../util'
+import { hyphenate } from '../../lib/hyphenate'
 import { SlackOption } from '../../typings'
 
 const userSchema = new Schema(

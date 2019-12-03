@@ -1,19 +1,6 @@
-import { InviteField } from './typings'
+import { InviteField } from '../typings'
 
-export function hyphenate(d: Date, time: boolean = false): string {
-  const year = d.getFullYear()
-  const month = d.getMonth() + 1
-  const day = d.getDate()
-  if (time) {
-    const hours = d.getHours().toString().padStart(2, "0")
-    const minutes = d.getMinutes().toString().padStart(2, "0")
-    return `${year}-${month}-${day} ${hours}:${minutes}`
-  } else {
-    return `${year}-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`
-  }
-}
-
-export function serializeCreateInviteView(viewStateValues) {
+export default function serializeCreateInviteView(viewStateValues) {
   const date = viewStateValues[InviteField.date][InviteField.date].value
   const theme = viewStateValues[InviteField.theme][InviteField.theme].value
   const time = viewStateValues[InviteField.time][InviteField.time].value

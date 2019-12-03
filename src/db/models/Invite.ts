@@ -1,7 +1,7 @@
 import { Schema, model, Document, Model } from 'mongoose'
 import { uniq } from 'lodash'
 import User, { IUser } from './User'
-import { hyphenate } from '../../util'
+import { hyphenate } from '../../lib/hyphenate'
 import { Actions } from '../../typings'
 
 export enum Confirmation {
