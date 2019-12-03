@@ -1,5 +1,5 @@
 import { Invite } from '../db/models'
-import { Actions, Views, InviteField } from '../typings'
+import { Views, InviteField } from '../typings'
 import { hyphenate } from '../util'
 
 export async function createInviteModal(time?, theme?, date?) {
@@ -38,6 +38,7 @@ async function engineerBlock(engineerOptions) {
     "block_id": InviteField.userId,
     "element": {
       "type": "static_select",
+      "action_id": InviteField.userId,
       "placeholder": {
         "type": "plain_text",
         "text": "Takakuda",
@@ -74,7 +75,7 @@ function themeBlock(theme: string = "") {
     "block_id": InviteField.theme,
     "element": {
       "type": "plain_text_input",
-      "action_id": "theme",
+      "action_id": InviteField.theme,
       "placeholder": {
         "type": "plain_text",
         "text": "What is the theme of the pair-programming?"
@@ -116,6 +117,7 @@ function dateBlock(date: string = "") {
     "block_id": InviteField.date,
     "element": {
       "type": "plain_text_input",
+      "action_id": InviteField.date,
       "placeholder": {
         "type": "plain_text",
         "text": "YYYY-MM-DD"
@@ -131,14 +133,14 @@ function dateBlock(date: string = "") {
 
 function timeBlock(time: string = "") {
   const d = new Date()
-  const hh = d.getHours()
-  const mm = d.getMinutes()
+  const hh = d.getHours().toString().padStart(2, "0")
+  const mm = d.getMinutes().toString().padStart(2, "0")
   return {
     "type": "input",
     "block_id": InviteField.time,
     "element": {
       "type": "plain_text_input",
-      "action_id": "time",
+      "action_id": InviteField.time,
       "placeholder": {
         "type": "plain_text",
         "text": "hh:mm"

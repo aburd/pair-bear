@@ -16,6 +16,7 @@ import { createInviteModal } from './processes/inviteModal'
 import { User, Invite } from './db/models'
 import { Confirmation } from './db/models/Invite'
 import { Actions, Views } from './typings'
+import { serializeCreateInviteView } from './util'
 
 
 const app = new App({
@@ -109,18 +110,20 @@ app.action(Actions.inviteCreateInvite, async ({ ack, payload, body, context }) =
   }
 });
 
-app.view(Views.inviteCreated, async args => {
-  const { ack, payload } = args
+app.view(Views.inviteCreated, async ({ ack, payload, body, context, say }) => {
   ack();
-  await handleUsers(args)
-  console.log(JSON.stringify(payload.state, null, 2))
+  context.user = await User.findOneById(body.user.id)
+  const { theme, day, toUserId, time } = serializeCreateInviteView(payload.state.values)
+  const date = new Date(`${day} ${time} GMT+0900`)
+  const invite = await Invite.create({
+    theme,
+    date,
+    to: toUserId,
+    from: context.user.userId,
+    confirmation: Confirmation.unconfirmed,
+  })
+  console.log('invite', invite)
 });
-
-function serializeCreateInviteView(view) {
-  return {
-
-  }
-}
 
 (async () => {
   const db = await connect()
