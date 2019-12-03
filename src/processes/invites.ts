@@ -17,13 +17,31 @@ async function listOptions({ say, context }) {
       "type": "section",
       "text": {
         "type": "mrkdwn",
+        "text": "Show Denied Invites"
+      },
+      "accessory": {
+        "type": "button",
+        "text": {
+          "type": "plain_text",
+          "text": "Show All Denied",
+        },
+        "action_id": Actions.inviteShowDenied,
+      }
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
         "text": "Show Received Invites"
       },
       "accessory": {
         "type": "button",
         "text": {
           "type": "plain_text",
-          "text": "Show",
+          "text": "Show Received",
         },
         "action_id": Actions.inviteShowReceived,
       }
@@ -40,7 +58,7 @@ async function listOptions({ say, context }) {
         "type": "button",
         "text": {
           "type": "plain_text",
-          "text": "Show",
+          "text": "Show Sent",
         },
         "action_id": Actions.inviteShowSent,
       }
@@ -65,6 +83,17 @@ async function listOptions({ say, context }) {
     blocks.push({ "type": "divider" })
   }
   await say({ blocks })
+}
+
+export async function showDenied({ say, context }) {
+  const { user }: { user: IUser } = context
+  const invites = await user.invitesDenied()
+  if (invites && invites.length) {
+    say('All denied invites to/from:')
+    invites.forEach(async (invite) => say({ blocks: await invite.toBlocks() }))
+  } else {
+    say("You have no denied invites!")
+  }
 }
 
 export async function showReceived({ say, context }) {

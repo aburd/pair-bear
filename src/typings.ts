@@ -1,4 +1,5 @@
 export enum Actions {
+  inviteShowDenied = "invite_show_denied",
   inviteShowReceived = "invite_show_received",
   inviteShowSent = "invite_show_sent",
   inviteConfirm = 'invite_confirm',

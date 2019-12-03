@@ -9,6 +9,7 @@ import {
 } from './processes'
 import {
   showInviteOptions,
+  showDenied,
   showReceived,
   showSent,
 } from './processes/invites'
@@ -60,12 +61,16 @@ app.message(/^invites?/i, async (args) => {
   await showInviteOptions(args)
 })
 
+app.action(Actions.inviteShowDenied, async (args) => {
+  args.ack()
+  await handleUsers(args)
+  await showDenied(args)
+})
 app.action(Actions.inviteShowReceived, async (args) => {
   args.ack()
   await handleUsers(args)
   await showReceived(args)
 })
-
 app.action(Actions.inviteShowSent, async (args) => {
   args.ack()
   await handleUsers(args)
