@@ -1,5 +1,6 @@
 import { Schema, model, Document, Model } from 'mongoose'
-import User from './User'
+import { uniq } from 'lodash'
+import User, { IUser } from './User'
 import { hyphenate } from '../../util'
 import { Actions } from '../../typings'
 
@@ -120,8 +121,20 @@ inviteSchema.static('findByDate', function (date: Date): Promise<IInvite> {
   })
 })
 
+inviteSchema.static('notInvitedUsers', async function (): Promise<IUser[]> {
+  const date = new Date()
+  const current = hyphenate(date)
+  const confirmed = await this.find({
+    createdAt: { $gte: current },
+    confirmation: Confirmation.confirmed,
+  }) as IInvite[]
+  const confirmedUsers = confirmed.reduce((users, invite) => [...users, ...[invite.to, invite.from]], [])
+  return await User.find({ userId: { $nin: confirmedUsers } })
+})
+
 export interface IInviteModel extends Model<IInvite> {
   findByDate(inviteId: string): Promise<IInvite>
+  notInvitedUsers(): Promise<IUser[]>
 }
 
 export default model<IInvite, IInviteModel>('Invite', inviteSchema);

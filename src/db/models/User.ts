@@ -1,6 +1,7 @@
 import { Schema, model, Document, Model } from 'mongoose'
 import Invite, { Confirmation, IInvite } from './Invite'
 import { hyphenate } from '../../util'
+import { SlackOption } from '../../typings'
 
 const userSchema = new Schema(
   {
@@ -37,6 +38,16 @@ userSchema.methods.slackName = function (): string {
   return `<@${this.userId}>`
 }
 
+userSchema.methods.toSlackOption = function (): SlackOption {
+  return {
+    text: {
+      type: "plain_text",
+      text: this.slackName(),
+    },
+    value: this.userId
+  }
+}
+
 userSchema.methods.invitesSent = function () {
   const now = hyphenate(new Date())
   return Invite.find({
@@ -56,6 +67,7 @@ userSchema.methods.invitesReceived = function () {
 export interface IUser extends IUserSchema {
   convoExpired: boolean
   slackName(): string
+  toSlackOption(): SlackOption
   invitesSent(): Promise<IInvite[]>
   invitesReceived(): Promise<IInvite[]>
 }
