@@ -70,9 +70,18 @@ userSchema.methods.toSlackOption = function (): SlackOption {
 userSchema.methods.invitesDenied = function () {
   const now = hyphenate(new Date())
   return Invite.find({
-    from: this.userId,
-    date: { $gte: now },
-    confirmation: Confirmation.denied,
+    $and: [
+      {
+        date: { $gte: now },
+        confirmation: Confirmation.denied,
+      },
+      {
+        $or: [
+          { from: this.userId },
+          { to: this.userId },
+        ]
+      }
+    ]
   })
 }
 

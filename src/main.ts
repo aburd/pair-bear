@@ -77,22 +77,26 @@ app.action(Actions.inviteShowSent, async (args) => {
   await showSent(args)
 })
 
-app.action(Actions.inviteConfirm, async ({ ack, payload, say }) => {
+app.action(Actions.inviteConfirm, async (args) => {
+  await handleUsers(args)
+  const { ack, payload, context, say } = args;
   const invite = await Invite.findById(payload.value)
   invite.confirmation = Confirmation.confirmed
   await invite.save()
   ack()
   say("Invite has been confirmed!")
-  say({ blocks: await invite.toBlocks() })
+  say({ blocks: await invite.toBlocks(context.user.userId) })
 })
 
-app.action(Actions.inviteDeny, async ({ ack, payload, say }) => {
+app.action(Actions.inviteDeny, async (args) => {
+  await handleUsers(args)
+  const { ack, payload, context, say } = args;
   const invite = await Invite.findById(payload.value)
   invite.confirmation = Confirmation.denied
   await invite.save()
   ack()
   say("Invite has been denied")
-  say({ blocks: await invite.toBlocks() })
+  say({ blocks: await invite.toBlocks(context.user.userId) })
 })
 
 app.action(Actions.inviteCreateInvite, async ({ ack, payload, body, context }) => {

@@ -16,7 +16,7 @@ const inviteSchema = new Schema(
     date: { type: Date, required: true },
     from: { type: String, required: true },
     to: { type: String, required: true },
-    confirmation: { type: String, default: Confirmation.unconfirmed }
+    confirmation: { type: String, default: Confirmation.unconfirmed },
   },
   { timestamps: true },
 );
@@ -29,12 +29,13 @@ interface IInviteSchema extends Document {
   confirmation: Confirmation
 }
 
-inviteSchema.methods.toBlocks = async function () {
+inviteSchema.methods.toBlocks = async function (userId: string) {
+  const showControls = userId === this.to
   const [from, to] = await Promise.all([
     User.findOneById(this.from),
     User.findOneById(this.to),
   ])
-  return [
+  let blocks: any = [
     {
       "type": "divider"
     },
@@ -73,7 +74,9 @@ inviteSchema.methods.toBlocks = async function () {
         },
       ]
     },
-    {
+  ]
+  if (showControls) {
+    blocks.push({
       "type": "actions",
       "elements": [
         {
@@ -99,15 +102,14 @@ inviteSchema.methods.toBlocks = async function () {
           action_id: Actions.inviteDeny,
         }
       ]
-    },
-    {
-      "type": "divider"
-    },
-  ]
+    })
+  }
+  blocks.push({ "type": "divider" })
+  return blocks
 }
 
 export interface IInvite extends IInviteSchema {
-  toBlocks(): any
+  toBlocks(userId: string): any
 }
 
 inviteSchema.static('findByDate', function (date: Date): Promise<IInvite> {

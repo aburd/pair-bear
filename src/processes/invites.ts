@@ -90,7 +90,7 @@ export async function showDenied({ say, context }) {
   const invites = await user.invitesDenied()
   if (invites && invites.length) {
     say('All denied invites to/from:')
-    invites.forEach(async (invite) => say({ blocks: await invite.toBlocks() }))
+    invites.forEach(async (invite) => say({ blocks: await invite.toBlocks(user.userId) }))
   } else {
     say("You have no denied invites!")
   }
@@ -101,7 +101,7 @@ export async function showReceived({ say, context }) {
   const invites = await user.invitesReceived()
   if (invites && invites.length) {
     say('Invites Received:')
-    invites.forEach(async (invite) => say({ blocks: await invite.toBlocks() }))
+    invites.forEach(async (invite) => say({ blocks: await invite.toBlocks(user.userId) }))
   } else {
     say("You have no invites at the moment!")
   }
@@ -112,7 +112,7 @@ export async function showSent({ say, context }) {
   const invites = await user.invitesSent()
   if (invites && invites.length) {
     say('Invites Sent:')
-    invites.forEach(async (invite) => say({ blocks: await invite.toBlocks() }))
+    invites.forEach(async (invite) => say({ blocks: await invite.toBlocks(user.userId) }))
   } else {
     say("You don't have any invites, or the invites you have sent are too old. Say `invites` if you want to create a new one!")
   }
