@@ -12,15 +12,16 @@ import {
   showReceived,
   showSent,
 } from './processes/invites'
+import { createInviteModal } from './processes/inviteModal'
 import { User, Invite } from './db/models'
 import { Confirmation } from './db/models/Invite'
-import { Actions } from './typings'
+import { Actions, Views } from './typings'
 
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
-  endpoints: { events: '/slack/events', commands: '/slack/commands' }
+  endpoints: { events: '/slack/events', commands: '/slack/commands', actions: '/slack/actions' }
 });
 
 // middleware
@@ -33,6 +34,11 @@ app.message(/help|who are you\??/i, async (args) => {
   await handleUsers(args)
   await help(args)
 })
+
+// hello
+app.message(/^(hello|hi|こんにちは|こんばんは|hey)$/i, async (args) => {
+  await greet(args)
+});
 
 // invites
 app.command(`/invites`, async (args) => {
@@ -83,46 +89,31 @@ app.action(Actions.inviteDeny, async ({ ack, payload, say }) => {
   say({ blocks: await invite.toBlocks() })
 })
 
-app.action(Actions.inviteCreateInvite, ({ ack, payload, context }) => {
+app.action(Actions.inviteCreateInvite, async ({ ack, payload, body, context }) => {
   // Acknowledge the command request
   ack();
-  console.log('payload.trigger_id', payload)
-  console.log('context', context)
+  const inviteModal = await createInviteModal()
+  console.log(JSON.stringify(inviteModal, null, 2))
   try {
     const result = app.client.views.open({
       token: context.botToken,
       // Pass a valid trigger_id within 3 seconds of receiving it
-      trigger_id: 'invite_create_modal',
+      trigger_id: body.trigger_id,
       // View payload
-      view: {
-        type: 'modal',
-        // View identifier
-        callback_id: 'view_1',
-        title: {
-          type: 'plain_text',
-          text: 'Modal title'
-        },
-        blocks: [],
-        submit: {
-          type: 'plain_text',
-          text: 'Submit'
-        }
-      }
+      view: inviteModal,
     });
-    console.log(result);
+    console.log(result)
   }
   catch (error) {
-    console.error(error);
+    console.error(error)
   }
 });
 
-
-
-// hello
-app.message(/^(hello|hi|こんにちは|こんばんは|hey)$/i, async (args) => {
-  await greet(args)
+app.view(Views.inviteCreated, async args => {
+  args.ack();
+  await handleUsers(args)  
+  console.log('args from invite_created', args)
 });
-
 
 (async () => {
   const db = await connect()
