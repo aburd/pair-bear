@@ -6,14 +6,14 @@ import { handleUsers } from './middleware/handleUsers'
 import {
   help,
   greet,
-} from './processes'
+} from './handlers'
 import {
   showInviteOptions,
   showDenied,
   showReceived,
   showSent,
-} from './processes/invites'
-import { createInviteModal } from './processes/inviteModal'
+} from './handlers/invites'
+import { createInviteModal } from './handlers/inviteModal'
 import { User, Invite } from './db/models'
 import { Confirmation } from './db/models/Invite'
 import { Actions, Views } from './typings'
