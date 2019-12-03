@@ -110,10 +110,17 @@ app.action(Actions.inviteCreateInvite, async ({ ack, payload, body, context }) =
 });
 
 app.view(Views.inviteCreated, async args => {
-  args.ack();
-  await handleUsers(args)  
-  console.log('args from invite_created', args)
+  const { ack, payload } = args
+  ack();
+  await handleUsers(args)
+  console.log(JSON.stringify(payload.state, null, 2))
 });
+
+function serializeCreateInviteView(view) {
+  return {
+
+  }
+}
 
 (async () => {
   const db = await connect()

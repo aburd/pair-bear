@@ -1,8 +1,15 @@
 import { Invite } from '../db/models'
-import { Views } from '../typings'
+import { Actions, Views, InviteField } from '../typings'
+import { hyphenate } from '../util'
 
-export async function createInviteModal() {
+export async function createInviteModal(time?, theme?, date?) {
   const options = await userOptions()
+  const blocks = options.length
+    ? [dateBlock(date),
+       timeBlock(time),
+       themeBlock(theme),
+       await engineerBlock(options)]
+    : [sorryBlock()]
   return {
     "type": "modal",
     "callback_id": Views.inviteCreated,
@@ -21,20 +28,14 @@ export async function createInviteModal() {
       "text": "Cancel",
       "emoji": true
     },
-    "blocks": options.length
-      ? [
-        themeBlock(),
-        await engineerBlock(options),
-        datepickerBlock(),
-        timeBlock(),
-      ]
-      : [sorryBlock()]
+    "blocks": blocks,
   }
 }
 
 async function engineerBlock(engineerOptions) {
   return {
     "type": "input",
+    "block_id": InviteField.userId,
     "element": {
       "type": "static_select",
       "placeholder": {
@@ -42,11 +43,11 @@ async function engineerBlock(engineerOptions) {
         "text": "Takakuda",
         emoji: true,
       },
-      "options": engineerOptions
+      "options": engineerOptions,
   },
     "label": {
       "type": "plain_text",
-      "text": "Takakuda",
+      "text": "Choose an engineer",
       "emoji": true
     }
   }
@@ -67,16 +68,18 @@ async function userOptions() {
     })
 }
 
-function themeBlock() {
+function themeBlock(theme: string = "") {
   return {
     "type": "input",
+    "block_id": InviteField.theme,
     "element": {
       "type": "plain_text_input",
       "action_id": "theme",
       "placeholder": {
         "type": "plain_text",
         "text": "What is the theme of the pair-programming?"
-      }
+      },
+      "initial_value": theme,
     },
     "label": {
       "type": "plain_text",
@@ -86,15 +89,17 @@ function themeBlock() {
 }
 
 function datepickerBlock() {
+  const initialDate = new Date()
   return {
     "type": "section",
+    "block_id": "datepicker",
     "text": {
       "type": "mrkdwn",
       "text": "Pick a day to pair-program"
     },
     "accessory": {
       "type": "datepicker",
-      "initial_date": "1990-04-28",
+      "initial_date": hyphenate(initialDate),
       "placeholder": {
         "type": "plain_text",
         "text": "Select a date",
@@ -104,20 +109,45 @@ function datepickerBlock() {
   }
 }
 
-function timeBlock() {
+function dateBlock(date: string = "") {
+  const initialDate = new Date()
   return {
     "type": "input",
+    "block_id": InviteField.date,
+    "element": {
+      "type": "plain_text_input",
+      "placeholder": {
+        "type": "plain_text",
+        "text": "YYYY-MM-DD"
+      },
+      "initial_value": date || hyphenate(initialDate),
+    },
+    "label": {
+      "type": "plain_text",
+      "text": "What time do you want to pair program?",
+    }
+  }
+}
+
+function timeBlock(time: string = "") {
+  const d = new Date()
+  const hh = d.getHours()
+  const mm = d.getMinutes()
+  return {
+    "type": "input",
+    "block_id": InviteField.time,
     "element": {
       "type": "plain_text_input",
       "action_id": "time",
       "placeholder": {
         "type": "plain_text",
         "text": "hh:mm"
-      }
+      },
+      "initial_value": time || `${hh}:${mm}`,
     },
     "label": {
       "type": "plain_text",
-      "text": "What time do you want to pair program?",
+      "text": "What time do you want to pair program?"
     }
   }
 }
