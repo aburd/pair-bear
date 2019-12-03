@@ -145,6 +145,16 @@ app.view(Views.inviteCreated, async ({ ack, payload, body, context }) => {
       from: context.user.userId,
       confirmation: Confirmation.unconfirmed,
     })
+    app.client.chat.postMessage({
+      token: context.botToken,
+      channel: context.user.channel,
+      text: 'The invitation has been created',
+    })
+    app.client.chat.postMessage({
+      token: context.botToken,
+      channel: context.user.channel,
+      blocks: await invite.toBlocks(context.user.userId)
+    })
   }
 });
 
