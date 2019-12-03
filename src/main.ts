@@ -122,10 +122,28 @@ app.action(Actions.inviteDelete, async ({ ack, payload, context, body }) => {
   ack()
   const invite = await Invite.findById(payload.value)
   await invite.remove()
+  const toUser = await User.findOneById(invite.to)
+  // Notify from
   app.client.chat.postMessage({
     token: context.botToken,
     channel: body.channel.id,
     text: 'The invitation has been deleted',
+  })
+  app.client.chat.postMessage({
+    token: context.botToken,
+    channel: body.channel.id,
+    blocks: await invite.toBlocks(body.user.userId)
+  })
+  // Notify to
+  app.client.chat.postMessage({
+    token: context.botToken,
+    channel: toUser.channel,
+    text: 'The invitation has been deleted',
+  })
+  app.client.chat.postMessage({
+    token: context.botToken,
+    channel: toUser.channel,
+    blocks: await invite.toBlocks(toUser.userId)
   })
 })
 
