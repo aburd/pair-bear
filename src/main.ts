@@ -110,19 +110,23 @@ app.action(Actions.inviteCreateInvite, async ({ ack, payload, body, context }) =
   }
 });
 
-app.view(Views.inviteCreated, async ({ ack, payload, body, context, say }) => {
+app.view(Views.inviteCreated, async ({ ack, payload, body, context }) => {
   ack();
   context.user = await User.findOneById(body.user.id)
   const { theme, day, toUserId, time } = serializeCreateInviteView(payload.state.values)
   const date = new Date(`${day} ${time} GMT+0900`)
-  const invite = await Invite.create({
-    theme,
-    date,
-    to: toUserId,
-    from: context.user.userId,
-    confirmation: Confirmation.unconfirmed,
-  })
-  console.log('invite', invite)
+  const toUser = await User.findOneById(toUserId)
+  if (await toUser.currentInvite()) { 
+    console.log('Invite already exists')
+  } else {
+    const invite = await Invite.create({
+      theme,
+      date,
+      to: toUserId,
+      from: context.user.userId,
+      confirmation: Confirmation.unconfirmed,
+    })
+  }
 });
 
 (async () => {

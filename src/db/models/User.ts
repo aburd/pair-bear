@@ -38,6 +38,25 @@ userSchema.methods.slackName = function (): string {
   return `<@${this.userId}>`
 }
 
+userSchema.methods.currentInvite = function () {
+  const date = new Date()
+  const current = hyphenate(date)
+  return Invite.findOne({
+    $and: [
+      {
+        createdAt: { $gte: current },
+        confirmation: Confirmation.confirmed,
+      },
+      {
+        $or: [
+          { to: this.userId },
+          { from: this.userId },
+        ]
+      }
+    ]
+  })
+}
+
 userSchema.methods.toSlackOption = function (): SlackOption {
   return {
     text: {
@@ -48,11 +67,21 @@ userSchema.methods.toSlackOption = function (): SlackOption {
   }
 }
 
+userSchema.methods.invitesDenied = function () {
+  const now = hyphenate(new Date())
+  return Invite.find({
+    from: this.userId,
+    date: { $gte: now },
+    confirmation: Confirmation.denied,
+  })
+}
+
 userSchema.methods.invitesSent = function () {
   const now = hyphenate(new Date())
   return Invite.find({
     from: this.userId,
     date: { $gte: now },
+    confirmation: { $in: [Confirmation.confirmed, Confirmation.unconfirmed] }
   })
 }
 
@@ -61,6 +90,7 @@ userSchema.methods.invitesReceived = function () {
   return Invite.find({
     to: this.userId,
     date: { $gte: now },
+    confirmation: { $in: [Confirmation.confirmed, Confirmation.unconfirmed] }
   })
 }
 
@@ -68,8 +98,10 @@ export interface IUser extends IUserSchema {
   convoExpired: boolean
   slackName(): string
   toSlackOption(): SlackOption
+  invitesDenied(): Promise<IInvite[]>
   invitesSent(): Promise<IInvite[]>
   invitesReceived(): Promise<IInvite[]>
+  currentInvite(): Promise<IInvite>
 }
 
 userSchema.static('findOneById', function (userId) {

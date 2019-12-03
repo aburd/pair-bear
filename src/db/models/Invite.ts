@@ -129,7 +129,7 @@ inviteSchema.static('notInvitedUsers', async function (): Promise<IUser[]> {
     confirmation: Confirmation.confirmed,
   }) as IInvite[]
   const confirmedUsers = confirmed.reduce((users, invite) => [...users, ...[invite.to, invite.from]], [])
-  return await User.find({ userId: { $nin: confirmedUsers } })
+  return await User.find({ userId: { $nin: uniq(confirmedUsers) } })
 })
 
 export interface IInviteModel extends Model<IInvite> {
