@@ -52,7 +52,7 @@ async function listOptions({ say, context }) {
       "type": "section",
       "text": {
         "type": "mrkdwn",
-        "text": "Show Sent Invite"
+        "text": "Show Sent Invites"
       },
       "accessory": {
         "type": "button",
