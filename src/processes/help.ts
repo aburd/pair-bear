@@ -1,5 +1,4 @@
 import Bolt from '@slack/bolt';
-import { randomFact } from '../lib/bearFacts'
 
 const token = process.env.SLACK_ACCESS_TOKEN
 
@@ -22,13 +21,19 @@ export default async function help({ say, app, channel }: {
     }
   }
 
-  await sendMsg(`Did you know? ${randomFact()}
-    You're trying to get help from a bear?
+  await sendMsg(`I'm Pair-Bear, a bear that helps out with pair-programming (it's best not to think about it).
+    My primary function is to manage "invites" to pair-programming from your fellow programmers.
+    
+    Usage:
+    1. Create an invite to invite someone else to pair-programming
+    2. Or wait for someone else to invite you
+    3. Accept an invitation, and I'll remind you when it's time to pair program
+    4. After pair-programming, be sure to leave feedback!
+
     Maybe you can try these commands:
     Say:
     \`help\` to see these options again
     \`hello\` for a great bear greeting!
-    \`appointments\` to check on, or setup a new appointment
-    \`invites\` to see any invites`
+    \`invites\` or \`/invites\` to see any information associated with "invites"`
   )
 }
