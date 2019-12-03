@@ -20,6 +20,7 @@ import { Actions } from './typings'
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
+  endpoints: { events: '/slack/events', commands: '/slack/commands' }
 });
 
 // middleware
@@ -28,12 +29,18 @@ const app = new App({
 // app.use(handleUsers)
 
 // help
-app.message(/help/i, async (args) => {
+app.message(/help|who are you\??/i, async (args) => {
   await handleUsers(args)
   await help(args)
 })
 
 // invites
+app.command('/invites', async (args) => {
+  console.log('invites', args)
+  args.ack()
+  await handleUsers(args)
+  await showInviteOptions(args)
+})
 app.message(/^invites?/i, async (args) => {
   await handleUsers(args)
   await showInviteOptions(args)

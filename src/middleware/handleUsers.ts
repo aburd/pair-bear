@@ -7,9 +7,10 @@ export async function handleUsers({ payload, body, context, say, next }) {
     console.log('body', body)
     console.log('\n\n')
   }
-  const { channel, text } = payload
+  // both channel and channel_id are used because slack API is not standardized on this key
+  const { channel, channel_id, text } = payload
   try {
-    const user = await getUser(channel)
+    const user = await getUser(channel || channel_id)
     if (!user) throw new Error('User not registered!')
     if (user.convoExpired) {
       say("It's been a while! I missed you (roar).")
@@ -19,20 +20,25 @@ export async function handleUsers({ payload, body, context, say, next }) {
     next()
   } catch (e) {
     console.error(e.message)
-    registerNewUser(payload, say);
+    await registerNewUser(payload, say, context);
+    next()
   }
 };
 
-async function registerNewUser(payload, say) {
-  const userId = payload.user;
+async function registerNewUser(payload, say, context) {
+  const userId = payload.user || payload.user_id;
+  const channelId = payload.channel || payload.channel_id;
+  const teamId = payload.team || payload.team_id;
   console.log('Creating new User in DB...');
   const user = await User.create({
     userId,
-    channel: payload.channel,
-    team: payload.team,
+    channel: channelId,
+    team: teamId,
     lastMessage: { text: payload.text }
   })
-  await say(`Oh hey, <@${user.userId}>! Nice to meet you! I went ahead and registered you in the database. Type \`help\` for more information`)
+  context.user = user
+  await say(`Oh hey, <@${user.userId}>! Nice to meet you, I'm pair bear! I went ahead and registered you in the database. Type \`help\` or \`Who are you?\` for more information about me.`)
+  return user
 }
 
 async function getUser(channel) {
