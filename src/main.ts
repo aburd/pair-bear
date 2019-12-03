@@ -99,11 +99,10 @@ app.action(Actions.inviteDeny, async (args) => {
   say({ blocks: await invite.toBlocks(context.user.userId) })
 })
 
-app.action(Actions.inviteCreateInvite, async ({ ack, payload, body, context }) => {
+app.action(Actions.inviteCreate, async ({ ack, payload, body, context }) => {
   // Acknowledge the command request
   ack();
   const inviteModal = await createInviteModal()
-  console.log(JSON.stringify(inviteModal, null, 2))
   try {
     const result = app.client.views.open({
       token: context.botToken,
@@ -118,6 +117,17 @@ app.action(Actions.inviteCreateInvite, async ({ ack, payload, body, context }) =
     console.error(error)
   }
 });
+
+app.action(Actions.inviteDelete, async ({ ack, payload, context, body }) => {
+  ack()
+  const invite = await Invite.findById(payload.value)
+  await invite.remove()
+  app.client.chat.postMessage({
+    token: context.botToken,
+    channel: body.channel.id,
+    text: 'The invitation has been deleted',
+  })
+})
 
 app.view(Views.inviteCreated, async ({ ack, payload, body, context }) => {
   ack();

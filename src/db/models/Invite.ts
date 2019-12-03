@@ -30,52 +30,53 @@ interface IInviteSchema extends Document {
 }
 
 inviteSchema.methods.toBlocks = async function (userId: string) {
-  const showControls = userId === this.to
+  const isFrom = userId === this.from
+  const isTo = userId === this.to
   const [from, to] = await Promise.all([
     User.findOneById(this.from),
     User.findOneById(this.to),
   ])
-  let blocks: any = [
-    {
-      "type": "divider"
-    },
-    {
-      "type": "section",
-      "text": {
-        "type": "mrkdwn",
-        "text": `Invite from ${from.slackName()}`
-      }
-    },
-    {
+  let blocks: any = [{ "type": "divider" }]
+  if (isFrom) {
+    blocks.push({
       "type": "section",
       "text": {
         "type": "mrkdwn",
         "text": `Invite to ${to.slackName()}`
       }
-    },
-    {
+    })
+  }
+  if (isTo) {
+    blocks.push({
       "type": "section",
-      "fields": [
-        {
-          "type": "mrkdwn",
-          "text": `*Theme:*\n${this.theme}`
-        },
-        {
-          "type": "mrkdwn",
-          "text": `*Confirmed:*\n${this.confirmation}`
-        },
-        {
-          "type": "mrkdwn",
-          "text": `*When:*\n${hyphenate(this.date, true)}`
-        },
-        {
-          "type": "mrkdwn",
-          "text": `*Created At:*\n${hyphenate(this.createdAt, true)}`
-        },
-      ]
-    },
-  ]
-  if (showControls) {
+      "text": {
+        "type": "mrkdwn",
+        "text": `Invite from ${from.slackName()}`
+      }
+    })
+  }
+  blocks.push({
+    "type": "section",
+    "fields": [
+      {
+        "type": "mrkdwn",
+        "text": `*Theme:*\n${this.theme}`
+      },
+      {
+        "type": "mrkdwn",
+        "text": `*Confirmed:*\n${this.confirmation}`
+      },
+      {
+        "type": "mrkdwn",
+        "text": `*When:*\n${hyphenate(this.date, true)}`
+      },
+      {
+        "type": "mrkdwn",
+        "text": `*Created At:*\n${hyphenate(this.createdAt, true)}`
+      },
+    ]
+  })
+  if (isTo) {
     blocks.push({
       "type": "actions",
       "elements": [
@@ -105,6 +106,24 @@ inviteSchema.methods.toBlocks = async function (userId: string) {
     })
   }
   blocks.push({ "type": "divider" })
+  if (isFrom) {
+    blocks.push({
+      "type": "actions",
+      "elements": [
+        {
+          "type": "button",
+          "text": {
+            "type": "plain_text",
+            "emoji": true,
+            "text": "Delete"
+          },
+          "style": "danger",
+          "value": this.id,
+          action_id: Actions.inviteDelete,
+        }
+      ]
+    })
+  }
   return blocks
 }
 

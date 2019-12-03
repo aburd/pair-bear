@@ -75,9 +75,9 @@ async function listOptions({ say, context }) {
         "type": "button",
         "text": {
           "type": "plain_text",
-          "text": "Show",
+          "text": "Create",
         },
-        "action_id": Actions.inviteCreateInvite,
+        "action_id": Actions.inviteCreate,
       }
     })
     blocks.push({ "type": "divider" })
