@@ -8,10 +8,10 @@ export async function handleUsers({ payload, body, context, say, next }) {
     console.log('\n\n')
   }
   // both channel and channel_id are used because slack API is not standardized on this key
-  const { channel, channel_id, text } = payload
-  const channelId = channel || channel_id || body.channel.id
+  const { user, user_id, text } = payload
+  const userId = user || user_id || body.user.id
   try {
-    const user = await getUser(channelId)
+    const user = await getUser(userId)
     if (!user) throw new Error('User not registered!')
     if (user.convoExpired) {
       say("It's been a while! I missed you (roar).")
@@ -44,7 +44,7 @@ async function registerNewUser(payload, body, say, context) {
 }
 
 async function getUser(channel) {
-  const user = await User.findOneByChannel(channel)
+  const user = await User.findOneById(channel)
   if (user) {
     return user
   } else {
