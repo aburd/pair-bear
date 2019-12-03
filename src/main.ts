@@ -35,12 +35,19 @@ app.message(/help|who are you\??/i, async (args) => {
 })
 
 // invites
-app.command('/invites', async (args) => {
-  console.log('invites', args)
+app.command(`/invites`, async (args) => {
   args.ack()
   await handleUsers(args)
-  await showInviteOptions(args)
+  switch (args.payload.text) {
+    case 'received':
+      return await showReceived(args)
+    case 'show':
+      return await showSent(args)
+    default:
+      await showInviteOptions(args)
+  }
 })
+
 app.message(/^invites?/i, async (args) => {
   await handleUsers(args)
   await showInviteOptions(args)
@@ -48,15 +55,13 @@ app.message(/^invites?/i, async (args) => {
 
 app.action(Actions.inviteShowReceived, async (args) => {
   args.ack()
-  const { context, body } = args;
-  context.user = await User.findOneById(body.user.id)
+  await handleUsers(args)
   await showReceived(args)
 })
 
 app.action(Actions.inviteShowSent, async (args) => {
   args.ack()
-  const { context, body } = args;
-  context.user = await User.findOneById(body.user.id)
+  await handleUsers(args)
   await showSent(args)
 })
 
