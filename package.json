@@ -2,6 +2,7 @@
   "name": "pair-bear",
   "version": "0.0.1",
   "description": "Pair Programming Chatbot",
+  "engine": ">=10.13.0",
   "main": "dist/main.js",
   "repository": "https://github.com/aburd/pair-bear.git",
   "author": "Aaron Burdick",
