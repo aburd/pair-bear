@@ -2,7 +2,9 @@
   "name": "pair-bear",
   "version": "0.0.1",
   "description": "Pair Programming Chatbot",
-  "engines" : { "node" : ">=10.13.0" },
+  "engines": {
+    "node": ">=10.13.0"
+  },
   "main": "dist/main.js",
   "repository": "https://github.com/aburd/pair-bear.git",
   "author": "Aaron Burdick",
@@ -16,13 +18,14 @@
     "@slack/bolt": "^1.4.1",
     "dotenv": "^8.2.0",
     "lodash": "^4.17.15",
-    "mongoose": "^5.7.9"
+    "mongoose": "^5.7.9",
+    "node-cron": "^2.0.3"
   },
   "devDependencies": {
     "@types/mongoose": "^5.5.30",
     "@types/node": "^12.12.7",
     "nodemon": "^2.0.1",
-    "ts-node": "^8.4.1",
+    "ts-node": "^8.5.4",
     "tslint": "^5.20.1",
     "typescript": "^3.7.2"
   }
