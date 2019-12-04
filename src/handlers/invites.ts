@@ -8,78 +8,20 @@ export async function showInviteOptions(args): Promise<void> {
 }
 
 async function listOptions({ say, context }) {
-  const sentInvites = await context.user.invitesSent()
   const blocks = [
-    {
-      "type": "divider"
-    },
-    {
-      "type": "section",
-      "text": {
-        "type": "mrkdwn",
-        "text": "Show Denied Invites"
-      },
-      "accessory": {
-        "type": "button",
-        "text": {
-          "type": "plain_text",
-          "text": "Show All Denied",
-        },
-        "action_id": Actions.inviteShowDenied,
-      }
-    },
-    {
-      "type": "divider"
-    },
-    {
-      "type": "section",
-      "text": {
-        "type": "mrkdwn",
-        "text": "Show Received Invites"
-      },
-      "accessory": {
-        "type": "button",
-        "text": {
-          "type": "plain_text",
-          "text": "Show Received",
-        },
-        "action_id": Actions.inviteShowReceived,
-      }
-    },
+    { "type": "divider" },
+    btnBlock("Show Denied Invites", "Show All Denied", Actions.inviteShowDenied),
+    { "type": "divider" },
+    btnBlock("Show Received Invites", "Show Received", Actions.inviteShowReceived),
   ]
+  const sentInvites = await context.user.invitesSent()
   if (sentInvites && sentInvites.length) {
-    blocks.push({
-      "type": "section",
-      "text": {
-        "type": "mrkdwn",
-        "text": "Show Sent Invites"
-      },
-      "accessory": {
-        "type": "button",
-        "text": {
-          "type": "plain_text",
-          "text": "Show Sent",
-        },
-        "action_id": Actions.inviteShowSent,
-      }
-    })
+    const sentBtn = btnBlock("Show Sent Invites", "Show Sent", Actions.inviteShowSent)
+    blocks.push(sentBtn)
     blocks.push({ "type": "divider" })
   } else {
-    blocks.push({
-      "type": "section",
-      "text": {
-        "type": "mrkdwn",
-        "text": "Create Invite"
-      },
-      "accessory": {
-        "type": "button",
-        "text": {
-          "type": "plain_text",
-          "text": "Create",
-        },
-        "action_id": Actions.inviteCreate,
-      }
-    })
+    const createBtn = btnBlock("Create Invite", "Create", Actions.inviteCreate)
+    blocks.push(createBtn)
     blocks.push({ "type": "divider" })
   }
   await say({ blocks })
@@ -118,24 +60,20 @@ export async function showSent({ say, context }) {
   }
 }
 
-async function confirmInvite({ say, context }) {
-  await say(`Hey, let's set up pair programming for this week, ${context.user.slackName()}! (rawr)`)
-  await say(`Please choose the engineer you would like to pair program with.`)
-  await say(`Here are the engineers that are available:`)
-  // await displayUsers(say)
-}
-
-async function temp(args) {
-  const { say } = args;
-  await say(`You've chosen <engineer>, is that correct?`)
-  await say(`Bear-y good! (heh)`)
-  await say(`Can you also choose some date and times for your pair-programming session?\n(the other engineer may ask to change this later)`)
-  await say(`Ok, so just bear with me (heh), I'm going to confirm your details.`)
-  // showInviteDetails()
-  const confirmed = true
-  if (confirmed) {
-    await say(`Thanks! I'm so excited, I can't bear it!`)
-  } else {
-    await say(`Hmm, let's try that again.`)
+function btnBlock(label, text, actionId) {
+  return {
+    "type": "section",
+    "text": {
+      "type": "mrkdwn",
+      "text": label,
+    },
+    "accessory": {
+      "type": "button",
+      "text": {
+        "type": "plain_text",
+        "text": text,
+      },
+      "action_id": actionId,
+    }
   }
 }
