@@ -2,6 +2,7 @@
 // https://zeals.docbase.io/posts/957871#a-sending-invite
 import { IUser } from '../../db/models'
 import { Actions } from '../../typings'
+import { btnBlock } from '../../lib/blocks'
 
 export async function showInviteOptions(args): Promise<void> {
   await listOptions(args)
@@ -57,23 +58,5 @@ export async function showSent({ say, context }) {
     invites.forEach(async (invite) => say({ blocks: await invite.toBlocks(user.userId) }))
   } else {
     say("You don't have any invites, or the invites you have sent are too old. Say `invites` if you want to create a new one!")
-  }
-}
-
-function btnBlock(label, text, actionId) {
-  return {
-    "type": "section",
-    "text": {
-      "type": "mrkdwn",
-      "text": label,
-    },
-    "accessory": {
-      "type": "button",
-      "text": {
-        "type": "plain_text",
-        "text": text,
-      },
-      "action_id": actionId,
-    }
   }
 }

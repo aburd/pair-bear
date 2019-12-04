@@ -1,8 +1,30 @@
 import bolt from '@slack/bolt'
 import { Invite, User } from '../db/models'
+import { Actions } from '../typings'
 import { formatDate } from '../lib/helpers'
+import { btnBlock } from '../lib/blocks'
 
 const token = process.env.SLACK_BOT_TOKEN
+
+async function sendCreateReminder(app: bolt.App) {
+  const users = await User.find()
+  users.forEach(async user => {
+    const invites = await user.invitesSent()
+    if(!invites.length) {
+      app.client.chat.postMessage({
+        token,
+        channel: user.channel,
+        text: `*Reminder:* You haven't set up pair-programming for this week!`,
+      })
+      app.client.chat.postMessage({
+        token,
+        channel: user.channel,
+        text: '',
+        blocks: [btnBlock("Create Invite", "Create", Actions.inviteCreate)],
+      })
+    }
+  })
+}
 
 async function remindConfirmed (app: bolt.App) {
   const minDate = new Date()
@@ -37,5 +59,6 @@ async function sendReminder(app, invite) {
 }
 
 export default {
-  remindConfirmed
+  remindConfirmed,
+  sendCreateReminder,
 }
