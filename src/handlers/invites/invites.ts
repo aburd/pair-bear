@@ -1,7 +1,7 @@
 // Sending Invite
 // https://zeals.docbase.io/posts/957871#a-sending-invite
-import { IUser } from '../db/models'
-import { Actions } from '../typings'
+import { IUser } from '../../db/models'
+import { Actions } from '../../typings'
 
 export async function showInviteOptions(args): Promise<void> {
   await listOptions(args)

@@ -1,4 +1,4 @@
-import { randomFact } from '../lib/bearFacts'
+import { randomFact } from '../../lib/bearFacts'
 
 function randomResponse() {
   const greetings = [
@@ -13,6 +13,12 @@ function randomResponse() {
   return greetings[Math.floor(Math.random() * greetings.length)]
 }
 
-export default async function ({ say }) {
-  say(`${randomResponse()}! Did you know? ${randomFact()}`);
+export async function greet(say) {
+  await say(`${randomResponse()}! Did you know? ${randomFact()}`);
+}
+
+export default function greetingHandler (app) {
+  app.message(/^(hello|hi|こんにちは|こんばんは|hey)$/i, async ({ say }) => {
+    greet(say)
+  });  
 }

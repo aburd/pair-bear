@@ -1,27 +1,7 @@
-import Bolt from '@slack/bolt';
+import { handleUsers } from '../../middleware/handleUsers'
 
-const token = process.env.SLACK_ACCESS_TOKEN
-
-export default async function help({ say, app, channel }: {
-  say?: any,
-  app?: Bolt.App,
-  channel?: string,
-}): Promise<void> {
-  async function sendMsg(text) {
-    if (say) {
-      return say(text)
-    } else if (app && channel) {
-      return app.client.chat.postMessage({
-        token,
-        channel,
-        text,
-      })
-    } else {
-      throw new Error('Cannot execute without method to chat')
-    }
-  }
-
-  await sendMsg(`I'm Pair-Bear, a bear that helps out with pair-programming.
+export async function help(say) {
+  await say(`I'm Pair-Bear, a bear that helps out with pair-programming.
     My primary function is to manage "invites" to pair-programming from your fellow programmers.
     
     Usage:
@@ -36,4 +16,11 @@ export default async function help({ say, app, channel }: {
     \`hello\` for a great bear greeting!
     \`invites\` or \`/invites\` to see any information associated with "invites"`
   )
+}
+
+export default function helpHandler(app) {
+  app.message(/help|who are you\??/i, async (args) => {
+    await handleUsers(args)
+    await help(args.say)
+  })
 }

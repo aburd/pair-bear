@@ -1,6 +1,6 @@
-import { Invite } from '../db/models'
-import { Views, InviteField } from '../typings'
-import { hyphenate } from '../lib/hyphenate'
+import { Invite } from '../../db/models'
+import { Views, InviteField } from '../../typings'
+import { hyphenate } from '../../lib/hyphenate'
 
 export async function createInviteModal(time?, theme?, date?) {
   const options = await userOptions()
