@@ -29,7 +29,7 @@ const app = new App({
 // middleware
 // NOTE: middleware in bolt does not work as documented 
 // as listener functions will not wait for `next` function in global middleware
-// app.use(handleUsers)
+// app.use(async args => await handleUsers(args))
 
 // help
 app.message(/help|who are you\??/i, async (args) => {
@@ -193,5 +193,5 @@ app.view(Views.inviteCreated, async ({ ack, payload, body, context }) => {
   await app.start(process.env.PORT || 3000);
   console.log('Pair bear is alive!');
 
-  // await sendingInvite(app, db)
+  
 })();

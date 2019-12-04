@@ -21,7 +21,7 @@ export default async function help({ say, app, channel }: {
     }
   }
 
-  await sendMsg(`I'm Pair-Bear, a bear that helps out with pair-programming (it's best not to think about it).
+  await sendMsg(`I'm Pair-Bear, a bear that helps out with pair-programming.
     My primary function is to manage "invites" to pair-programming from your fellow programmers.
     
     Usage:
