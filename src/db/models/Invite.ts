@@ -131,22 +131,20 @@ export interface IInvite extends IInviteSchema {
   toBlocks(userId: string): any
 }
 
-inviteSchema.static('findByDate', function (date: Date): Promise<IInvite> {
-  const current = hyphenate(date)
-  const next = hyphenate(new Date(date.valueOf() + (24 * 60 * 60 * 1000)))
+inviteSchema.static('findConfirmedByRange', function (minDate: Date, maxDate: Date): Promise<IInvite[]> {
   return this.find({
-    createdAt: {
-      $gte: current,
-      $lte: next,
-    }
+    date: {
+      $gte: minDate,
+      $lt: maxDate,
+    },
+    confirmation: Confirmation.confirmed,
   })
 })
 
 inviteSchema.static('notInvitedUsers', async function (): Promise<IUser[]> {
-  const date = new Date()
-  const current = hyphenate(date)
+  const now = new Date()
   const confirmed = await this.find({
-    createdAt: { $gte: current },
+    createdAt: { $gte: now },
     confirmation: Confirmation.confirmed,
   }) as IInvite[]
   const confirmedUsers = confirmed.reduce((users, invite) => [...users, ...[invite.to, invite.from]], [])
@@ -154,7 +152,7 @@ inviteSchema.static('notInvitedUsers', async function (): Promise<IUser[]> {
 })
 
 export interface IInviteModel extends Model<IInvite> {
-  findByDate(inviteId: string): Promise<IInvite>
+  findConfirmedByRange(minDate: Date, maxDate: Date): Promise<IInvite[]>
   notInvitedUsers(): Promise<IUser[]>
 }
 
