@@ -43,6 +43,11 @@ app.message(/^(hello|hi|こんにちは|こんばんは|hey)$/i, async (args) =>
 });
 
 // invites
+app.message(/^invites?/i, async (args) => {
+  await handleUsers(args)
+  await showInviteOptions(args)
+})
+
 app.command(`/invites`, async (args) => {
   args.ack()
   await handleUsers(args)
@@ -54,11 +59,6 @@ app.command(`/invites`, async (args) => {
     default:
       await showInviteOptions(args)
   }
-})
-
-app.message(/^invites?/i, async (args) => {
-  await handleUsers(args)
-  await showInviteOptions(args)
 })
 
 app.action(Actions.inviteShowDenied, async (args) => {
