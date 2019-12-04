@@ -5,6 +5,7 @@ import connect from './db/connect'
 import greetingHandler from './handlers/greeting'
 import helpHandler from './handlers/help'
 import invitesHandler from './handlers/invites'
+import startCron from './cron'
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -22,6 +23,7 @@ invitesHandler(app);
 
 (async () => {
   const db = await connect()
-  await app.start(process.env.PORT || 3000);
-  console.log('Pair bear is alive!');
+  await app.start(process.env.PORT || 3000)
+  console.log('Pair bear is alive!')
+  startCron(app)
 })();
