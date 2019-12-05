@@ -42,7 +42,7 @@ inviteSchema.methods.toBlocks = async function (userId: string) {
       "type": "section",
       "text": {
         "type": "mrkdwn",
-        "text": `Invite to ${to.slackName()}`
+        "text": `Invite to ${to.displayName}`
       }
     })
   }
@@ -51,7 +51,7 @@ inviteSchema.methods.toBlocks = async function (userId: string) {
       "type": "section",
       "text": {
         "type": "mrkdwn",
-        "text": `Invite from ${from.slackName()}`
+        "text": `Invite from ${from.displayName}`
       }
     })
   }

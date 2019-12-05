@@ -13,13 +13,13 @@ import serializeCreateInviteView from '../../lib/serializeCreateInviteView'
 
 export default function invitesHandler(app)  {
   app.message(/^invites?/i, async (args) => {
-    await handleUsers(args)
+    await handleUsers(args, app)
     await showInviteOptions(args)
   })
   
   app.command(`/invites`, async (args) => {
     args.ack()
-    await handleUsers(args)
+    await handleUsers(args, app)
     switch (args.payload.text) {
       case 'received':
         return await showReceived(args)
@@ -32,22 +32,22 @@ export default function invitesHandler(app)  {
   
   app.action(Actions.inviteShowDenied, async (args) => {
     args.ack()
-    await handleUsers(args)
+    await handleUsers(args, app)
     await showDenied(args)
   })
   app.action(Actions.inviteShowReceived, async (args) => {
     args.ack()
-    await handleUsers(args)
+    await handleUsers(args, app)
     await showReceived(args)
   })
   app.action(Actions.inviteShowSent, async (args) => {
     args.ack()
-    await handleUsers(args)
+    await handleUsers(args, app)
     await showSent(args)
   })
   
   app.action(Actions.inviteConfirm, async (args) => {
-    await handleUsers(args)
+    await handleUsers(args, app)
     const { ack, payload, context, say } = args;
     const invite = await Invite.findById(payload.value)
     invite.confirmation = Confirmation.confirmed
@@ -58,7 +58,7 @@ export default function invitesHandler(app)  {
   })
   
   app.action(Actions.inviteDeny, async (args) => {
-    await handleUsers(args)
+    await handleUsers(args, app)
     const { ack, payload, context, say } = args;
     const invite = await Invite.findById(payload.value)
     invite.confirmation = Confirmation.denied
@@ -106,12 +106,12 @@ export default function invitesHandler(app)  {
     // Notify to
     app.client.chat.postMessage({
       token: context.botToken,
-      channel: toUser.channel,
+      channel: toUser.channelId,
       text: 'The invitation has been deleted',
     })
     app.client.chat.postMessage({
       token: context.botToken,
-      channel: toUser.channel,
+      channel: toUser.channelId,
       blocks: await invite.toBlocks(toUser.userId)
     })
   })
@@ -135,23 +135,23 @@ export default function invitesHandler(app)  {
       // Notify from
       app.client.chat.postMessage({
         token: context.botToken,
-        channel: context.user.channel,
+        channel: context.user.channelId,
         text: 'The invitation has been created',
       })
       app.client.chat.postMessage({
         token: context.botToken,
-        channel: context.user.channel,
+        channel: context.user.channelId,
         blocks: await invite.toBlocks(context.user.userId)
       })
       // Notify to
       app.client.chat.postMessage({
         token: context.botToken,
-        channel: toUser.channel,
+        channel: toUser.channelId,
         text: 'The invitation has been created',
       })
       app.client.chat.postMessage({
         token: context.botToken,
-        channel: toUser.channel,
+        channel: toUser.channelId,
         blocks: await invite.toBlocks(toUser.userId)
       })
     }

@@ -1,4 +1,6 @@
+import bolt from '@slack/bolt'
 import { randomFact } from '../../lib/bearFacts'
+import { handleUsers } from '../../middleware/handleUsers'
 
 function randomResponse() {
   const greetings = [
@@ -17,8 +19,9 @@ export async function greet(say) {
   await say(`${randomResponse()}! Did you know? ${randomFact()}`);
 }
 
-export default function greetingHandler (app) {
-  app.message(/^(hello|hi|こんにちは|こんばんは|hey)$/i, async ({ say }) => {
-    greet(say)
+export default function greetingHandler (app: bolt.App) {
+  app.message(/^(hello|hi|こんにちは|こんばんは|hey)$/i, async (args) => {
+    await handleUsers(args, app)
+    greet(args.say)
   });  
 }

@@ -20,7 +20,7 @@ export async function help(say) {
 
 export default function helpHandler(app) {
   app.message(/help|who are you\??/i, async (args) => {
-    await handleUsers(args)
+    await handleUsers(args, app)
     await help(args.say)
   })
 }
