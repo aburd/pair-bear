@@ -58,7 +58,7 @@ mongo <dbdomain>/<dbname> -u <dbuser> -p <dbpassword>
 ### D. Confirmed Invite Reminder
 
 - [x] Once an invitation is confirmed, an appointment is created. 
-- [ ] Reminder messages are sent out 15 minutes before an appointment is scheduled for.
+- [x] Reminder messages are sent out 15 minutes before an appointment is scheduled for.
 - [x] Reminder messages are sent out when the appointment starts
 
 ### E. Confirmed Invite Report
