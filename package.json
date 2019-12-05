@@ -9,7 +9,7 @@
   "repository": "https://github.com/aburd/pair-bear.git",
   "author": "Aaron Burdick",
   "scripts": {
-    "start": "yarn && yarn compile && node ./dist/main.js",
+    "start": "yarn && ls ./node_modules/.bin && yarn compile && node ./dist/main.js",
     "compile": "./node_modules/.bin/tsc",
     "dev": "NODE_ENV=dev ./node_modules/.bin/nodemon --exec \"./node_modules/.bin/ts-node\" ./src/main.ts"
   },
