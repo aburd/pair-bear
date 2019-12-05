@@ -8,10 +8,24 @@ This is a typescript project which uses:
 
 ## Installation
 
+### Registering your ChatApp on Slack
+
+1. Visit `https://api.slack.com/apps?new_app=1`
+2. Follow this [Getting Started Guide](https://slack.dev/bolt/tutorial/getting-started)
+3. Make sure to get your Slack "Signing Secret" and "Bot Token"
+
+### Starting the chatbot server
+
 1. git clone
 2. cd
 3. yarn
 4. yarn dev
+
+### Forwarding HTTPS Traffic to your local dev server
+
+1. Download ngrok
+2. Run `ngrok http 3000`
+3. Register the ngrok tunnel url on your slack app
 
 ## Slackbot/DB Integration
 
