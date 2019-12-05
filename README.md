@@ -28,6 +28,13 @@ mongodb://<dbuser>:<dbpassword>@<dbdomain>/<dbname>
 mongo <dbdomain>/<dbname> -u <dbuser> -p <dbpassword>
 ```
 
+# Needs (completed is checked)
+
+## Development
+
+- [ ] CI
+- [ ] Basic testing
+
 ## Functionality
 
 ### A. Sending Invite
@@ -46,7 +53,7 @@ mongo <dbdomain>/<dbname> -u <dbuser> -p <dbpassword>
 - [ ] Rejection can be sent with a special message if necessary.
 - [ ] Rejection should start **[A. Sending Invite]** process again with the sender
 - [ ] On accept, the user must pick one of the ranked daytimes to program. If neither are satisfactory, the user has the option of suggesting new daytimes.
-- [ ] Once this is confirmed, a receipt is sent to the sender.
+- [x] Once this is confirmed, a receipt is sent to the sender.
 
 ### C. Schedule Change
 
