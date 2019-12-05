@@ -1,6 +1,7 @@
+import bolt from '@slack/bolt'
 import { User } from '../db/models'
 
-export async function handleUsers({ payload, body, context, say, next }) {
+export async function handleUsers({ payload, body, context, say, next }, app: bolt.App) {
   if (process.env.NODE_ENV = 'dev') {
     console.log('payload', payload)
     console.log('context', context)
@@ -21,25 +22,36 @@ export async function handleUsers({ payload, body, context, say, next }) {
     next()
   } catch (e) {
     console.error(e.message)
-    await registerNewUser(payload, body, say, context);
+    await registerNewUser(payload, body, say, context, app);
     next()
   }
 };
 
-async function registerNewUser(payload, body, say, context) {
+async function registerNewUser(payload, body, say, context, app) {
   const userId = payload.user || payload.user_id || body.user.id;
   const channelId = payload.channel || payload.channel_id || body.channel.id;
   const teamId = payload.team || payload.team_id || body.team.id;
   console.log('Creating new User in DB...');
-  console.log(userId, channelId, teamId)
+  console.log('userId', userId)
+  const info = await app.client.users.info({
+    token: process.env.SLACK_BOT_TOKEN,
+    user: userId,
+  })
+  const { name, real_name , tz, tz_offset, profile: { display_name, image_192 }} = info.user
   const user = await User.create({
     userId,
-    channel: channelId,
-    team: teamId,
-    lastMessage: { text: String(payload.text) }
+    channelId,
+    teamId,
+    tz,
+    tzOffset: tz_offset,
+    lastMessage: { text: String(payload.text) },
+    name,
+    realName: real_name,
+    displayName: display_name,
+    avatar: image_192,
   })
   context.user = user
-  await say(`Oh hey, <@${user.userId}>! Nice to meet you, I'm pair bear! I went ahead and registered you in the database. Type \`help\` or \`Who are you?\` for more information about me.`)
+  await say(`Oh hey, ${context.user.displayName}! Nice to meet you, I'm pair bear! I went ahead and registered you in the database. Type \`help\` or \`Who are you?\` for more information about me.`)
   return user
 }
 

@@ -13,12 +13,12 @@ async function sendCreateReminder(app: bolt.App) {
     if(!invites.length) {
       app.client.chat.postMessage({
         token,
-        channel: user.channel,
+        channel: user.channelId,
         text: `*Reminder:* You haven't set up pair-programming for this week!`,
       })
       app.client.chat.postMessage({
         token,
-        channel: user.channel,
+        channel: user.channelId,
         text: '',
         blocks: [btnBlock("Create Invite", "Create", Actions.inviteCreate)],
       })
@@ -48,23 +48,23 @@ async function sendReminder(app: bolt.App, invite: IInvite, message: string) {
   const from = await User.findOneById(invite.from)
   app.client.chat.postMessage({
     token,
-    channel: to.channel,
+    channel: to.channelId,
     text: `Reminder: ${message}`,
   })
   app.client.chat.postMessage({
     token,
-    channel: to.channel,
+    channel: to.channelId,
     text: '',
     blocks: await invite.toBlocks(to.userId)
   })
   app.client.chat.postMessage({
     token,
-    channel: from.channel,
+    channel: from.channelId,
     text: `Reminder: ${message}`,
   })
   app.client.chat.postMessage({
     token,
-    channel: from.channel,
+    channel: from.channelId,
     text: '',
     blocks: await invite.toBlocks(from.userId)
   })

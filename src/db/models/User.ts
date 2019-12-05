@@ -1,31 +1,44 @@
 import { Schema, model, Document, Model } from 'mongoose'
 import Invite, { Confirmation, IInvite } from './Invite'
-import { hyphenate } from '../../lib/hyphenate'
 import { SlackOption } from '../../typings'
 
 const userSchema = new Schema(
   {
     userId: { type: String, required: true, unique: true, index: true },
-    team: { type: String, required: true },
-    channel: { type: String, required: true },
+    teamId: { type: String, required: true },
+    channelId: { type: String, required: true },
+    tz: { type: String, required: true, default: 'Asia/Tokyo' },
+    tzOffset: String,
     expiresAt: { type: Date, default: Date.now },
     lastMessage: {
       text: { type: String, default: '' },
       date: { type: Date, default: Date.now },
     },
+    name: { type: String, required: true },
+    realName: { type: String, required: true },
+    displayName: { type: String, required: true },
+    avatar: { type: String, required: true },
   },
   { timestamps: true },
 );
 
 interface IUserSchema extends Document {
   userId: string,
-  team: string,
-  channel: string,
+  teamId: string,
+  channelId: string,
+  tz: String,
+  tzOffset?: string,
   expiresAt: Date,
   lastMessage: {
     text: string,
     date: Date,
   },
+  name: string,
+  realName: string,
+  displayName: string,
+  avatar: string,
+  createdAt: string,
+  updatedAt: string,
 }
 
 // virtuals
@@ -34,17 +47,15 @@ userSchema.virtual("convoExpired").get(function (): boolean {
 })
 
 // instance methods
-userSchema.methods.slackName = function (): string {
+userSchema.methods.slackMention = function (): string {
   return `<@${this.userId}>`
 }
 
 userSchema.methods.currentInvite = function () {
-  const date = new Date()
-  const current = hyphenate(date)
   return Invite.findOne({
     $and: [
       {
-        createdAt: { $gte: current },
+        createdAt: { $gte: new Date() },
         confirmation: Confirmation.confirmed,
       },
       {
@@ -61,7 +72,7 @@ userSchema.methods.toSlackOption = function (): SlackOption {
   return {
     text: {
       type: "plain_text",
-      text: this.slackName(),
+      text: `${this.displayName} (${this.realName})`,
     },
     value: this.userId
   }
@@ -93,17 +104,16 @@ userSchema.methods.invitesSent = function () {
 }
 
 userSchema.methods.invitesReceived = function () {
-  const now = hyphenate(new Date())
   return Invite.find({
     to: this.userId,
-    date: { $gte: now },
+    date: { $gte: new Date() },
     confirmation: { $in: [Confirmation.confirmed, Confirmation.unconfirmed] }
   })
 }
 
 export interface IUser extends IUserSchema {
   convoExpired: boolean
-  slackName(): string
+  slackMention(): string
   toSlackOption(): SlackOption
   invitesDenied(): Promise<IInvite[]>
   invitesSent(): Promise<IInvite[]>

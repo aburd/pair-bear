@@ -9,21 +9,23 @@
   "repository": "https://github.com/aburd/pair-bear.git",
   "author": "Aaron Burdick",
   "scripts": {
-    "start": "yarn compile && node ./dist/main.js",
-    "compile": "tsc",
-    "dev": "NODE_ENV=dev ./node_modules/.bin/nodemon --exec \"ts-node\" ./src/main.ts"
+    "start": "node ./dist/main.js",
+    "dev": "NODE_ENV=dev ./node_modules/.bin/nodemon --exec \"./node_modules/.bin/ts-node\" ./src/main.ts",
+    "tsc": "tsc",
+    "postinstall": "yarn tsc"
   },
   "license": "MIT",
   "dependencies": {
     "@slack/bolt": "^1.4.1",
     "dotenv": "^8.2.0",
     "lodash": "^4.17.15",
+    "moment-timezone": "^0.5.27",
     "mongoose": "^5.7.9",
     "node-cron": "^2.0.3"
   },
   "devDependencies": {
     "@types/mongoose": "^5.5.30",
-    "@types/node": "^12.12.7",
+    "@types/node": "^12.12.14",
     "nodemon": "^2.0.1",
     "ts-node": "^8.5.4",
     "tslint": "^5.20.1",
