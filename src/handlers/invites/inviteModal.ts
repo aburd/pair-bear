@@ -1,12 +1,12 @@
+import moment from 'moment-timezone'
 import { Invite } from '../../db/models'
 import { Views, InviteField } from '../../typings'
-import { hyphenate } from '../../lib/hyphenate'
 
-export async function createInviteModal(time?, theme?, date?) {
+export async function createInviteModal(context, time?, theme?, date?) {
   const options = await userOptions()
   const blocks = options.length
-    ? [dateBlock(date),
-       timeBlock(time),
+    ? [dateBlock(date, context.user.tz),
+      timeBlock(time, context.user.tz),
        themeBlock(theme),
        await engineerBlock(options)]
     : [sorryBlock()]
@@ -89,8 +89,7 @@ function themeBlock(theme: string = "") {
   }
 }
 
-function datepickerBlock() {
-  const initialDate = new Date()
+function datepickerBlock(tz) {
   return {
     "type": "section",
     "block_id": "datepicker",
@@ -100,7 +99,7 @@ function datepickerBlock() {
     },
     "accessory": {
       "type": "datepicker",
-      "initial_date": hyphenate(initialDate),
+      "initial_date": moment().tz(tz).format('YYYY-MM-DD HH:mm'),
       "placeholder": {
         "type": "plain_text",
         "text": "Select a date",
@@ -110,7 +109,7 @@ function datepickerBlock() {
   }
 }
 
-function dateBlock(date: string = "") {
+function dateBlock(date: string = "", tz) {
   const initialDate = new Date()
   return {
     "type": "input",
@@ -122,19 +121,16 @@ function dateBlock(date: string = "") {
         "type": "plain_text",
         "text": "YYYY-MM-DD"
       },
-      "initial_value": date || hyphenate(initialDate),
+      "initial_value": date || moment.tz(tz).format('YYYY-MM-DD'),
     },
     "label": {
       "type": "plain_text",
-      "text": "What time do you want to pair program?",
+      "text": "When do you want to pair program?",
     }
   }
 }
 
-function timeBlock(time: string = "") {
-  const d = new Date()
-  const hh = d.getHours().toString().padStart(2, "0")
-  const mm = d.getMinutes().toString().padStart(2, "0")
+function timeBlock(time: string = "", tz) {
   return {
     "type": "input",
     "block_id": InviteField.time,
@@ -145,7 +141,7 @@ function timeBlock(time: string = "") {
         "type": "plain_text",
         "text": "hh:mm"
       },
-      "initial_value": time || `${hh}:${mm}`,
+      "initial_value": time || moment.tz(tz).format('HH:mm'),
     },
     "label": {
       "type": "plain_text",

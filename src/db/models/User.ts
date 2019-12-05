@@ -1,6 +1,5 @@
 import { Schema, model, Document, Model } from 'mongoose'
 import Invite, { Confirmation, IInvite } from './Invite'
-import { hyphenate } from '../../lib/hyphenate'
 import { SlackOption } from '../../typings'
 
 const userSchema = new Schema(
@@ -53,12 +52,10 @@ userSchema.methods.slackMention = function (): string {
 }
 
 userSchema.methods.currentInvite = function () {
-  const date = new Date()
-  const current = hyphenate(date)
   return Invite.findOne({
     $and: [
       {
-        createdAt: { $gte: current },
+        createdAt: { $gte: new Date() },
         confirmation: Confirmation.confirmed,
       },
       {
@@ -107,10 +104,9 @@ userSchema.methods.invitesSent = function () {
 }
 
 userSchema.methods.invitesReceived = function () {
-  const now = hyphenate(new Date())
   return Invite.find({
     to: this.userId,
-    date: { $gte: now },
+    date: { $gte: new Date() },
     confirmation: { $in: [Confirmation.confirmed, Confirmation.unconfirmed] }
   })
 }

@@ -1,7 +1,7 @@
+import moment from 'moment-timezone'
 import { Schema, model, Document, Model } from 'mongoose'
 import { uniq } from 'lodash'
 import User, { IUser } from './User'
-import { hyphenate } from '../../lib/hyphenate'
 import { Actions } from '../../typings'
 
 export enum Confirmation {
@@ -36,6 +36,7 @@ inviteSchema.methods.toBlocks = async function (userId: string) {
     User.findOneById(this.from),
     User.findOneById(this.to),
   ])
+  const user = isFrom ? from : to;
   let blocks: any = [{ "type": "divider" }]
   if (isFrom) {
     blocks.push({
@@ -68,11 +69,11 @@ inviteSchema.methods.toBlocks = async function (userId: string) {
       },
       {
         "type": "mrkdwn",
-        "text": `*When:*\n${hyphenate(this.date, true)}`
+        "text": `*When:*\n${moment(this.date, user.tz).format('YYYY-MM-DD HH:mm')}`
       },
       {
         "type": "mrkdwn",
-        "text": `*Created At:*\n${hyphenate(this.createdAt, true)}`
+        "text": `*Created At:*\n${moment(this.createdAt, user.tz).format('YYYY-MM-DD HH:mm')}`
       },
     ]
   })

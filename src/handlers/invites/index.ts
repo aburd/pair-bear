@@ -1,3 +1,4 @@
+import moment from 'moment-timezone'
 import { handleUsers } from '../../middleware/handleUsers'
 import {
   showInviteOptions,
@@ -68,10 +69,12 @@ export default function invitesHandler(app)  {
     say({ blocks: await invite.toBlocks(context.user.userId) })
   })
   
-  app.action(Actions.inviteCreate, async ({ ack, payload, body, context }) => {
+  app.action(Actions.inviteCreate, async (args) => {
+    const { ack, body, context } = args
     // Acknowledge the command request
     ack();
-    const inviteModal = await createInviteModal()
+    handleUsers(args, app)
+    const inviteModal = await createInviteModal(context)
     try {
       const result = app.client.views.open({
         token: context.botToken,
@@ -120,7 +123,7 @@ export default function invitesHandler(app)  {
     ack();
     context.user = await User.findOneById(body.user.id)
     const { theme, day, toUserId, time } = serializeCreateInviteView(payload.state.values)
-    const date = new Date(`${day} ${time} GMT+0900`)
+    const date = moment(`${day} ${time}`, context.user.tz).format()
     const toUser = await User.findOneById(toUserId)
     if (await toUser.currentInvite()) { 
       console.log('Invite already exists')
