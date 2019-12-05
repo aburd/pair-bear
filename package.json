@@ -19,6 +19,7 @@
     "@slack/bolt": "^1.4.1",
     "dotenv": "^8.2.0",
     "lodash": "^4.17.15",
+    "moment": "^2.24.0",
     "mongoose": "^5.7.9",
     "node-cron": "^2.0.3"
   },
