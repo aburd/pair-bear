@@ -10,7 +10,7 @@
   "author": "Aaron Burdick",
   "scripts": {
     "start": "yarn && yarn compile && node ./dist/main.js",
-    "compile": "tsc",
+    "compile": "./node_modules/.bin/tsc",
     "dev": "NODE_ENV=dev ./node_modules/.bin/nodemon --exec \"ts-node\" ./src/main.ts"
   },
   "license": "MIT",
