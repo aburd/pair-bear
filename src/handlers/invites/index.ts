@@ -123,7 +123,7 @@ export default function invitesHandler(app)  {
     ack();
     context.user = await User.findOneById(body.user.id)
     const { theme, day, toUserId, time } = serializeCreateInviteView(payload.state.values)
-    const date = moment(`${day} ${time}`, context.user.tz).format()
+    const date = moment(`${day} ${time}`, 'YYYY-MM-DD HH:mm', context.user.tz).toDate()
     const toUser = await User.findOneById(toUserId)
     if (await toUser.currentInvite()) { 
       console.log('Invite already exists')
