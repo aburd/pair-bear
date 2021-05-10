@@ -18,7 +18,7 @@
   "dependencies": {
     "@slack/bolt": "^1.4.1",
     "dotenv": "^8.2.0",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "moment-timezone": "^0.5.27",
     "mongoose": "^5.7.9",
     "node-cron": "^2.0.3"
